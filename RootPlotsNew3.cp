@@ -1,5 +1,5 @@
 //
-//RootPlots.cpp
+//RootPlotsNew3.cpp
 //
 #include <stdio.h>
 #include "TFile.h"
@@ -85,7 +85,7 @@ void RootPlotsNew3(){
             }
             h[i]->Draw();
         }
-        c[i]->SaveAs(TString::Format("plots/%s_3Pi0.eps",name[i].Data()));
+        c[i]->SaveAs(TString::Format("FancyPlots/%s_3Pi0.eps",name[i].Data()));
         c[i]->Close();
    }
 }
