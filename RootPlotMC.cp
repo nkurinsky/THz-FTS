@@ -1,9 +1,12 @@
 //
 //RootPlotMCs.cpp
 //
-//want to compile this file usign g++
+// compile this file usign g++
 // g++ `root-config --cflags --glibs` RootPlotMC.cp -o RootPlotMC.exe
 // ./RootPlotMC.exe
+
+//montecarlo from run 63, 27kW
+//data from run 62, 24kW
 
 #include <stdio.h>
 #include "TFile.h"
@@ -14,16 +17,24 @@
 #include "TPaveStats.h"
 #include "TStyle.h"
 #include <TTree.h>
+#include <TPad.h>
+#include <TRatioPlot.h>
+#include <TLegend.h>
+#include <TLegendEntry.h>
+
 
 
 int main(){
-    
+//void RootPlotMC(){
+    //initializing vectors of things
     TString name[]={"CSIEt","GamClusCsiE","GamClusNumber", "KlongDeltaZ","KlongPt","Pi0Number","Pi0RecZ","Pi0Pt","Pi0Pt:Pi0RecZ"};
     TString GreekName[]={"CSIEt","GamClusCsiE","GamClusNumber", "K^{0}_{L}DeltaZ","K^{0}_{L}Pt","#pi^{0}Number","#pi^{0}RecZ","#pi^{0}Pt","#pi^{0}Pt:#pi^{0}RecZ"};
     std::vector<TCanvas*> c;
     
     std::vector<TH1F*> h;
     std::vector<TH1F*> mch;
+    
+    std::vector<double> lines = {1}; //for the line through the ratio plots at 1
     
     
     //open the file
@@ -32,9 +43,11 @@ int main(){
     TTree* myTree = (TTree*) myFile->Get("RecTree");
     TTree* mcTree = (TTree*) mcFile->Get("RecTree");
     
+    //data
     Int_t  GamClusNumber, Pi0Number;
     Double_t CSIEt, GamClusCsiE[6][120], KlongDeltaZ[6], KlongPt[6],Pi0RecZ[6], Pi0Pt[6];
     
+    //monte carlo
     Int_t  mcGamClusNumber, mcPi0Number;
     Double_t mcCSIEt, mcGamClusCsiE[6][120], mcKlongDeltaZ[6], mcKlongPt[6],mcPi0RecZ[6], mcPi0Pt[6], scale[9], mcscale[9];
 
@@ -68,7 +81,7 @@ int main(){
     h.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
     h.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
     h.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
-    h.push_back(new TH1F(GreekName[6],name[6],100,0,6000)); //Pi0RecZ
+    h.push_back(new TH1F(GreekName[6],name[6],100,0,7000)); //Pi0RecZ
     h.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
     TH2F *h8 = new TH2F(GreekName[8],name[8], 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
     
@@ -79,7 +92,7 @@ int main(){
     mch.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
     mch.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
     mch.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
-    mch.push_back(new TH1F(GreekName[6],name[6],100,0,6000)); //Pi0RecZ
+    mch.push_back(new TH1F(GreekName[6],name[6],100,0,7000)); //Pi0RecZ
     mch.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
     TH2F *mch8 = new TH2F(GreekName[8], "Monte Carlo", 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
 
@@ -121,13 +134,18 @@ int main(){
     
 
     
-    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "K^{0}_{L} distance travled in Z (mm)","K^{0}_{L} transverse momentum (MeV/#c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/#c)"};
+    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "K^{0}_{L} distance travled in Z (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
+    
+    //initializing the ratio plot
+    std::vector<TRatioPlot*> rp;
+    
     for (int i=0; i<9; i++){
         if (i==8){
+            //no ratio plot for the 2d histogram
             c.push_back(new TCanvas(Form("c%d",i),"",1250,600)); //creates the canvas
         }
         else{
-            c.push_back(new TCanvas(Form("c%d",i),"",700,600)); //creates the canvas
+            c.push_back(new TCanvas(Form("c%d",i),"",800,800)); //creates the canvas
         }
       c[i]->SetFillColor(0);
       c[i]->SetBorderMode(0);
@@ -135,6 +153,8 @@ int main(){
       c[i]->SetFrameBorderMode(0);
       c[i]->SetFrameBorderMode(0);
       c[i]->cd();
+
+
         if(i==8){
             mch8->GetXaxis()->SetTitle("Reconstructed Z position of #pi_{0}");
             mch8->GetYaxis()->SetTitle("Transverse momentum of #pi_{0}");
@@ -158,29 +178,49 @@ int main(){
             gStyle->SetOptStat(0);
 
         }
+        
         else{
             gStyle->SetOptStat(0);
-            mch[i]->GetXaxis()->SetTitle(x[i]);
-            mch[i]->GetYaxis()->SetTitleOffset(1.5);
-            mch[i]->GetXaxis()->SetTitleOffset(1.4);
-            mch[i]->GetYaxis()->SetTitle("Arb. Units");
-            mch[i]->GetYaxis()->SetTitleOffset(1.5);
+            h[i]->GetYaxis()->SetTitleOffset(1.5);
+            h[i]->GetXaxis()->SetTitleOffset(1.4);
+            h[i]->GetYaxis()->SetTitle("Arb. Units");
+            h[i]->GetXaxis()->SetTitle(x[i]);
+            h[i]->GetYaxis()->SetTitleOffset(1.6);
+            TLegend *leg= new TLegend(0.8,0.84,0.89,0.89);
+            leg->AddEntry(h[i],"data");
+            leg->AddEntry(mch[i],"monte carlo");
+            leg->SetBorderSize(2);
+            
+            
+            //sum of the weights for the error (Brian)
+            h[i]->Sumw2();
+            mch[i]->Sumw2();
             
             //normalization
             scale[i] = 1/h[i]->Integral();
             h[i]->Scale(scale[i]);
-        
-            //setting log plots for GamClusNumber and KlongPt plots
-            if (i==1 or i==3 or i==4){
-                c[i]->SetLogy();
-            }
-            mch[i]->SetLineColor(kRed);
-            mch[i]->SetFillColor(kRed);
             mcscale[i] = 1/mch[i]->Integral();
             mch[i]->Scale(mcscale[i]);
-            mch[i]->Draw("bar");
-            h[i]->SetMarkerStyle(20);
-            h[i]->Draw("E1 same");
+            
+            //coloring of histograms
+            mch[i]->SetLineColor(kRed);
+
+
+        
+            //setting log plots for GamClusNumber and KlongPt and Pi0RecZ and Pi0Pt plots
+            if (i==1 or i==3 or i==4 or i==6 or i==7){
+                c[i]->SetLogy();
+            }
+            
+            rp.push_back(new TRatioPlot(h[i],mch[i])); //creates the ratio plots
+            rp[i]->SetGridlines(lines);
+            rp[i]->Draw();
+            leg->Draw();
+            rp[i]->GetLowerRefGraph()->SetMinimum(-0.5);
+            rp[i]->GetLowerRefGraph()->GetYaxis()->SetTitle("Data : MC Ratio");
+            rp[i]->GetLowerRefGraph()->GetYaxis()->SetTitleOffset(1.5);
+            rp[i]->GetLowerRefGraph()->SetMaximum(2);
+
         }
         c[i]->Update();
         c[i]->SaveAs(TString::Format("MCPlots/%s_3Pi0.eps",name[i].Data()));
