@@ -35,6 +35,24 @@ int main(){
     Int_t MinFiducialXYvalue = 150;
     bool maxFiducialRbool = true;
     Int_t MaxFiducialRvalue = 850;
+    bool KlongPtMaxbool = true;
+    Int_t KlongPtMaxvalue = 50;
+    bool deltaVertexTimebool = true;
+    Int_t deltaVertexTimevalue = 3;
+    bool totalEtbool = true;
+    Int_t TotalEtvalue = 650;
+    bool KlongChiSqZbool = true;
+    Int_t KlongChiSqZvalue = 20;
+    bool MaxDeltaPi0Massbool = true;
+    Int_t MaxDeltaPi0Massvalue = 10;
+    bool MinClusterDistancebool = true;
+    Int_t MinClusterDistancevalue = 150;
+    bool maxPi0RecZbool = true;
+    Int_t maxPi0RecZvalue = 5000;
+    bool minPi0RecZbool = true;
+    Int_t minPi0RecZvalue = 3000;
+   
+    
     
     
     //initializing vectors of things
@@ -46,7 +64,7 @@ int main(){
     std::vector<TH1F*> mch;
     
     std::vector<double> lines = {1}; //for the line through the ratio plots at 1
-    
+
     
     //open the file
     TFile *myFile = TFile::Open("~/Desktop/Files_for_Koto/g6ana18993_node19_file0.root", "~/Desktop/Files_for_Koto/g6ana18993_node19_file0.root");
@@ -56,13 +74,13 @@ int main(){
     
     //data
     Int_t  GamClusNumber, Pi0Number;
-    Double_t MinGammaE, MaxGammaE, MinFiducialXY, MaxFiducialR;
-    Double_t CSIEt, GamClusCsiE[6][120], KlongDeltaZ[6], KlongPt[6],Pi0RecZ[6], Pi0Pt[6];
+    Double_t MinGammaE, MaxGammaE, MinFiducialXY, MaxFiducialR, DeltaVertexTime, TotalEt, KlongChiSqZ, MaxDeltaPi0Mass, MinClusterDistance;
+    Double_t CSIEt, GamClusCsiE[6][120], KlongDeltaZ[6], KlongPt[6],Pi0RecZ[6], Pi0Pt[6], Pi0Mom[6][3];
     
     //monte carlo
     Int_t  mcGamClusNumber, mcPi0Number;
-    Double_t mcMinGammaE, mcMaxGammaE, mcMinFiducialXY, mcMaxFiducialR;
-    Double_t mcCSIEt, mcGamClusCsiE[6][120], mcKlongDeltaZ[6], mcKlongPt[6],mcPi0RecZ[6], mcPi0Pt[6], scale[9], mcscale[9];
+    Double_t mcMinGammaE, mcMaxGammaE, mcMinFiducialXY, mcMaxFiducialR, mcDeltaVertexTime, mcTotalEt, mcKlongChiSqZ, mcMaxDeltaPi0Mass, mcMinClusterDistance;
+    Double_t mcCSIEt, mcGamClusCsiE[6][120], mcKlongDeltaZ[6], mcKlongPt[6],mcPi0RecZ[6], mcPi0Pt[6], scale[9], mcscale[9],  mcPi0Mom[6][3];
 
     
     //linking local variables to the branches
@@ -79,6 +97,11 @@ int main(){
     myTree->SetBranchAddress("MinGammaE", &MinGammaE); //for cuts
     myTree->SetBranchAddress("MinFiducialXY", &MinFiducialXY); //for cuts
     myTree->SetBranchAddress("MaxFiducialR", &MaxFiducialR); //for cuts
+    myTree->SetBranchAddress("DeltaVertexTime", &DeltaVertexTime); //for cuts
+    myTree->SetBranchAddress("TotalEt", &TotalEt); //for cuts
+    myTree->SetBranchAddress("KlongChiSqZ", &KlongChiSqZ); //for cuts
+    myTree->SetBranchAddress("MaxDeltaPi0Mass", &MaxDeltaPi0Mass); //for cuts
+    myTree->SetBranchAddress("MinClusterDistance", &MinClusterDistance); //for cuts
     
     //linking local variables to the montecarlo branches
     mcTree->SetBranchAddress("CSIEt", &mcCSIEt); //h0
@@ -93,36 +116,43 @@ int main(){
     mcTree->SetBranchAddress("MaxGammaE", &mcMaxGammaE);//for cuts
     mcTree->SetBranchAddress("MinGammaE", &mcMinGammaE); //for cuts
     mcTree->SetBranchAddress("MinFiducialXY", &mcMinFiducialXY); //for cuts
-    myTree->SetBranchAddress("MaxFiducialR", &mcMaxFiducialR); //for cuts
-
-
+    mcTree->SetBranchAddress("MaxFiducialR", &mcMaxFiducialR); //for cuts
+    mcTree->SetBranchAddress("DeltaVertexTime", &mcDeltaVertexTime); //for cuts
+    mcTree->SetBranchAddress("TotalEt", &mcTotalEt); //for cuts
+    mcTree->SetBranchAddress("KlongChiSqZ", &mcKlongChiSqZ); //for cuts
+    mcTree->SetBranchAddress("MaxDeltaPi0Mass", &mcMaxDeltaPi0Mass); //for cuts
+    mcTree->SetBranchAddress("MinClusterDistance", &mcMinClusterDistance); //for cuts
     
     
    //creating the histograms
-    h.push_back(new TH1F(GreekName[0],name[0],100,0,7000)); //CSIEt
+    h.push_back(new TH1F(GreekName[0],name[0],80,500,5000)); //CSIEt
     h.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
     h.push_back(new TH1F(GreekName[2],name[2],10,4,10)); //GamClusNumber
-    h.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
-    h.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
+    h.push_back(new TH1F(GreekName[3],name[3],100,0,1500)); //KlongDeltaZ
+    h.push_back(new TH1F(GreekName[4],name[4],8,0,50)); //KlongPt
     h.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
-    h.push_back(new TH1F(GreekName[6],name[6],100,0,7000)); //Pi0RecZ
-    h.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
+    h.push_back(new TH1F(GreekName[6],name[6],100,2500,5500)); //Pi0RecZ
+    h.push_back(new TH1F(GreekName[7],name[7],40,0,400)); //Pi0Pt
     TH2F *h8 = new TH2F(GreekName[8],name[8], 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
     
     //creating the monte carlo histograms
-    mch.push_back(new TH1F(GreekName[0],name[0],100,0,7000)); //CSIEt
-    mch.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
-    mch.push_back(new TH1F(GreekName[2],name[2],10,4,10)); //GamClusNumber
-    mch.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
-    mch.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
-    mch.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
-    mch.push_back(new TH1F(GreekName[6],name[6],100,0,7000)); //Pi0RecZ
-    mch.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
-    TH2F *mch8 = new TH2F(GreekName[8], "Monte Carlo", 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
+    mch.push_back(new TH1F(name[0],name[0],80, 500, 5000)); //CSIEt
+    mch.push_back(new TH1F(name[1],name[1],75,0,1200)); //GamClusCsiE
+    mch.push_back(new TH1F(name[2],name[2],10,4,10)); //GamClusNumber
+    mch.push_back(new TH1F(name[3],name[3],100,0,1500)); //KlongDeltaZ
+    mch.push_back(new TH1F(name[4],name[4],8,0,50)); //KlongPt
+    mch.push_back(new TH1F(name[5],name[5],10,2,10)); //Pi0Number
+    mch.push_back(new TH1F(name[6],name[6],100,2500,5500)); //Pi0RecZ
+    mch.push_back(new TH1F(name[7],name[7],40,0,400)); //Pi0Pt
+    TH2F *mch8 = new TH2F(name[8], "Monte Carlo", 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
 
     int nEntries = myTree->GetEntries();
+    
     for (int iEnt=0; iEnt < nEntries; iEnt++) {
         myTree->GetEntry(iEnt);
+        //std::cout<<"iEnt: " <<iEnt<<"\n";
+        
+        //initialzing and applying cuts
         if (minGammaEbool) {
             if (MinGammaE < minGammaEnergy){ //if actual energy is less than min energy cut,then skip the loop
                 continue;
@@ -143,7 +173,54 @@ int main(){
                 continue;
             }
         }
-        
+        if (KlongPtMaxbool){
+            for (int l=0; l<6; l++){
+                if (KlongPt[l] > KlongPtMaxvalue){
+                    goto increasing;
+                }
+            }
+        }
+        if (deltaVertexTimebool) {
+            if (DeltaVertexTime > deltaVertexTimevalue){
+                continue;
+            }
+        }
+        if (totalEtbool) {
+            if (TotalEt < TotalEtvalue){
+                continue;
+            }
+        }
+        if (KlongChiSqZbool) {
+            if (KlongChiSqZ > KlongChiSqZvalue){
+                continue;
+            }
+        }
+        if (MaxDeltaPi0Massbool) {
+            if (MaxDeltaPi0Mass > MaxDeltaPi0Massvalue){
+                continue;
+            }
+        }
+        if (MinClusterDistancebool) {
+            if (MinClusterDistance < MinClusterDistancevalue){
+                continue;
+            }
+        }
+        if (maxPi0RecZbool) {
+            for (int l=0; l<6; l++){
+                if (Pi0RecZ[l] > maxPi0RecZvalue){
+                    goto increasing;
+                }
+            }
+        }
+        if (minPi0RecZbool) {
+            for (int l=0; l<6; l++){
+                if (Pi0RecZ[l] < minPi0RecZvalue){
+                    goto increasing;
+                }
+            }
+        }
+
+        //fillling the histograms with the entries that have passed cutes
         h[0]->Fill(CSIEt);
         h[2]->Fill(GamClusNumber);
         h[5]->Fill(Pi0Number);
@@ -157,11 +234,14 @@ int main(){
                 h[1]->Fill(GamClusCsiE[n][j]);
             }
         }
-        
+    increasing:; //this is how we are applying cuts from the array based branches.
     }
+    
     nEntries = mcTree->GetEntries();
     for (int iEnt=0; iEnt < nEntries; iEnt++) {
         mcTree->GetEntry(iEnt);
+        
+        //initializing and applying cuts
         if (minGammaEbool) {
             if (mcMinGammaE < minGammaEnergy){ //if actual energy is less than min energy cut,then skip the loop
                 continue;
@@ -182,7 +262,55 @@ int main(){
                 continue;
             }
         }
+        if (KlongPtMaxbool){
+            for (int l=0; l<6; l++){
+                if (mcKlongPt[l] > KlongPtMaxvalue){
+                    goto increasingmc;
+                }
+            }
+        }
+        if (deltaVertexTimebool) {
+            if (mcDeltaVertexTime > deltaVertexTimevalue){
+                continue;
+            }
+        }
+        if (totalEtbool) {
+            if (mcTotalEt < TotalEtvalue){
+                continue;
+            }
+        }
+        if (KlongChiSqZbool) {
+            if (mcKlongChiSqZ > KlongChiSqZvalue){
+                continue;
+            }
+        }
+        if (MaxDeltaPi0Massbool) {
+            if (mcMaxDeltaPi0Mass > MaxDeltaPi0Massvalue){
+                continue;
+            }
+        }
+        if (MinClusterDistancebool) {
+            if (mcMinClusterDistance < MinClusterDistancevalue){
+                continue;
+            }
+        }
+        if (maxPi0RecZbool) {
+            for (int l=0; l<6; l++){
+                if (mcPi0RecZ[l] > maxPi0RecZvalue){
+                    goto increasingmc;
+                }
+            }
+        }
+        if (minPi0RecZbool) {
+            for (int l=0; l<6; l++){
+                if (mcPi0RecZ[l] < minPi0RecZvalue){
+                    goto increasingmc;
+                }
+            }
+        }
+        
 
+        //filling histograms with the entries that have passed all of our cuts
         mch[0]->Fill(mcCSIEt);
         mch[2]->Fill(mcGamClusNumber);
         mch[5]->Fill(mcPi0Number);
@@ -197,9 +325,8 @@ int main(){
                 mch[1]->Fill(mcGamClusCsiE[n][j]);
             }
         }
+        increasingmc:; //this is how we are applying cuts from the array based branches.
     }
-    
-
     
     TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "K^{0}_{L} distance travled in Z (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
     
@@ -221,7 +348,8 @@ int main(){
       c[i]->SetFrameBorderMode(0);
       c[i]->cd();
 
-
+        //histogram #8 is special bc it is 2d, so eerything is a bit different.
+        //comparing 2 2d histograms side by side rather than plotting on the same page
         if(i==8){
             mch8->GetXaxis()->SetTitle("Reconstructed Z position of #pi_{0}");
             mch8->GetYaxis()->SetTitle("Transverse momentum of #pi_{0}");
@@ -272,8 +400,6 @@ int main(){
             //coloring of histograms
             mch[i]->SetLineColor(kRed);
 
-
-        
             //setting log plots for GamClusNumber and KlongPt and Pi0RecZ and Pi0Pt plots
             if (i==1 or i==3 or i==4 or i==6 or i==7){
                 c[i]->SetLogy();
@@ -290,6 +416,8 @@ int main(){
 
         }
         c[i]->Update();
+        
+        //save the histograms as pdfs
         c[i]->SaveAs(TString::Format("MCPlotsCuts/%s_3Pi0.eps",name[i].Data()));
    }
 }
