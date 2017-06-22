@@ -2,10 +2,10 @@
 //RootPlotMCcuts.cpp
 //
 // compile this file usign g++
-// g++ `root-config --cflags --glibs` RootPlotMCcutandUncut.cp -o RootPlotMCcutandUncut.exe
-// ./RootPlotMCcutandUncut.exe
+// g++ `root-config --cflags --glibs` RootPlotMCcutsTH2F.cp -o RootPlotMCcutsTH2F.exe
+// ./RootPlotMCcutsTH2F.exe
 
-//montecarlo from run 63, 27kW
+//monte carlo from run 63, 27kW
 //data from run 62, 24kW
 
 #include <stdio.h>
@@ -62,7 +62,6 @@ int main(){
     
     std::vector<TH1F*> h;
     std::vector<TH1F*> mch;
-    std::vector<TH1F*> mchuncut;
     
     std::vector<double> lines = {1}; //for the line through the ratio plots at 1
 
@@ -81,7 +80,7 @@ int main(){
     //monte carlo
     Int_t  mcGamClusNumber, mcPi0Number;
     Double_t mcMinGammaE, mcMaxGammaE, mcMinFiducialXY, mcMaxFiducialR, mcDeltaVertexTime, mcTotalEt, mcKlongChiSqZ, mcMaxDeltaPi0Mass, mcMinClusterDistance;
-    Double_t mcCSIEt, mcGamClusCsiE[6][120], mcKlongDeltaZ[6], mcKlongPt[6],mcPi0RecZ[6], mcPi0Pt[6], scale[9], mcscale[9], mchuncutscale[8],  mcPi0Mom[6][3];
+    Double_t mcCSIEt, mcGamClusCsiE[6][120], mcKlongDeltaZ[6], mcKlongPt[6],mcPi0RecZ[6], mcPi0Pt[6], scale[9], mcscale[9],  mcPi0Mom[6][3];
 
     
     //linking local variables to the branches
@@ -126,37 +125,26 @@ int main(){
     
     
    //creating the histograms
-    h.push_back(new TH1F(GreekName[0],name[0],100,0,7000)); //CSIEt
+    h.push_back(new TH1F(GreekName[0],name[0],80,500,5000)); //CSIEt
     h.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
     h.push_back(new TH1F(GreekName[2],name[2],10,4,10)); //GamClusNumber
-    h.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
-    h.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
+    h.push_back(new TH1F(GreekName[3],name[3],100,0,1500)); //KlongDeltaZ
+    h.push_back(new TH1F(GreekName[4],name[4],8,0,50)); //KlongPt
     h.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
-    h.push_back(new TH1F(GreekName[6],name[6],100,0,6000)); //Pi0RecZ
-    h.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
-
+    h.push_back(new TH1F(GreekName[6],name[6],100,2500,5500)); //Pi0RecZ
+    h.push_back(new TH1F(GreekName[7],name[7],40,0,400)); //Pi0Pt
     TH2F *h8 = new TH2F(GreekName[8],name[8], 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
     
     //creating the monte carlo histograms
-    mch.push_back(new TH1F(name[0],name[0],100, 0, 7000)); //CSIEt
+    mch.push_back(new TH1F(name[0],name[0],80, 500, 5000)); //CSIEt
     mch.push_back(new TH1F(name[1],name[1],75,0,1200)); //GamClusCsiE
     mch.push_back(new TH1F(name[2],name[2],10,4,10)); //GamClusNumber
-    mch.push_back(new TH1F(name[3],name[3],100,0,2500)); //KlongDeltaZ
-    mch.push_back(new TH1F(name[4],name[4],10,0,140)); //KlongPt
+    mch.push_back(new TH1F(name[3],name[3],100,0,1500)); //KlongDeltaZ
+    mch.push_back(new TH1F(name[4],name[4],8,0,50)); //KlongPt
     mch.push_back(new TH1F(name[5],name[5],10,2,10)); //Pi0Number
-    mch.push_back(new TH1F(name[6],name[6],100,0,6000)); //Pi0RecZ
-    mch.push_back(new TH1F(name[7],name[7],50,0,600)); //Pi0Pt
+    mch.push_back(new TH1F(name[6],name[6],100,2500,5500)); //Pi0RecZ
+    mch.push_back(new TH1F(name[7],name[7],40,0,400)); //Pi0Pt
     TH2F *mch8 = new TH2F(name[8], "Monte Carlo", 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
-    
-    //creating the uncut monte carlo histograms
-    mchuncut.push_back(new TH1F(name[0],name[0],100, 0, 7000)); //CSIEt
-    mchuncut.push_back(new TH1F(name[1],name[1],75,0,1200)); //GamClusCsiE
-    mchuncut.push_back(new TH1F(name[2],name[2],10,4,10)); //GamClusNumber
-    mchuncut.push_back(new TH1F(name[3],name[3],100,0,2500)); //KlongDeltaZ
-    mchuncut.push_back(new TH1F(name[4],name[4],10,0,140)); //KlongPt
-    mchuncut.push_back(new TH1F(name[5],name[5],10,2,10)); //Pi0Number
-    mchuncut.push_back(new TH1F(name[6],name[6],100,0,6000)); //Pi0RecZ
-    mchuncut.push_back(new TH1F(name[7],name[7],50,0,600)); //Pi0Pt
 
     int nEntries = myTree->GetEntries();
     
@@ -252,20 +240,6 @@ int main(){
     nEntries = mcTree->GetEntries();
     for (int iEnt=0; iEnt < nEntries; iEnt++) {
         mcTree->GetEntry(iEnt);
-        mchuncut[0]->Fill(mcCSIEt);
-        mchuncut[2]->Fill(mcGamClusNumber);
-        mchuncut[5]->Fill(mcPi0Number);
-        for (int n=0; n<6; n++) {
-            mchuncut[3]->Fill(mcKlongDeltaZ[n]);
-            mchuncut[4]->Fill(mcKlongPt[n]);
-            mchuncut[6]->Fill(mcPi0RecZ[n]);
-            mchuncut[7]->Fill(mcPi0Pt[n]);
-            
-            for (int j=0; j<120; j++) {
-                mchuncut[1]->Fill(mcGamClusCsiE[n][j]);
-            }
-        }
-
         
         //initializing and applying cuts
         if (minGammaEbool) {
@@ -354,7 +328,7 @@ int main(){
         increasingmc:; //this is how we are applying cuts from the array based branches.
     }
     
-    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "K^{0}_{L} distance travled in Z (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
+    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible distance traveled between K^{0}_{L} and #pi^{0} decay(mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
     
     //initializing the ratio plot
     std::vector<TRatioPlot*> rp;
@@ -362,7 +336,7 @@ int main(){
     for (int i=0; i<9; i++){
         if (i==8){
             //no ratio plot for the 2d histogram
-            c.push_back(new TCanvas(Form("c%d",i),"",1250,600)); //creates the canvas
+            c.push_back(new TCanvas(Form("c%d",i),"",800,800)); //creates the canvas
         }
         else{
             c.push_back(new TCanvas(Form("c%d",i),"",800,800)); //creates the canvas
@@ -385,16 +359,13 @@ int main(){
             h8->GetYaxis()->SetTitle("Transverse momentum of #pi_{0}");
             h8->GetYaxis()->SetTitleOffset(1.5);
             h8->GetXaxis()->SetTitleOffset(1.4);
-            c[i]->Divide(2);
-            c[i]->cd(1);
             //normalization
             scale[i] = 1/h8->Integral();
             h8->Scale(scale[i]);
             mcscale[i] = 1/mch8->Integral();
             mch8->Scale(mcscale[i]);
-            h8->Draw("scat");
-            c[i]->cd(2);
-            mch8->Draw("colz");
+            h8->Draw("cont");
+            mch8->Draw("same");
             gPad->Update();
             gStyle->SetOptStat(0);
 
@@ -410,43 +381,30 @@ int main(){
             TLegend *leg= new TLegend(0.8,0.84,0.89,0.89);
             leg->AddEntry(h[i],"data");
             leg->AddEntry(mch[i],"monte carlo");
-            leg->AddEntry(mchuncut[i],"uncut monte carlo");
             leg->SetBorderSize(2);
             
             
             //sum of the weights for the error (Brian)
             h[i]->Sumw2();
             mch[i]->Sumw2();
-
             
             //normalization
             scale[i] = 1/h[i]->Integral();
             h[i]->Scale(scale[i]);
             mcscale[i] = 1/mch[i]->Integral();
             mch[i]->Scale(mcscale[i]);
-            mchuncutscale[i]=1/mchuncut[i]->Integral();
-            mchuncut[i]->Scale(scale[i]);
             
             //coloring of histograms
             mch[i]->SetLineColor(kRed);
 
-
-            
-            rp.push_back(new TRatioPlot(h[i],mch[i])); //creates the ratio plots
-            rp[i]->SetGridlines(lines);
-            rp[i]->Draw();
-            rp[i]->GetUpperPad()->cd();
-            mchuncut[i]->Draw("same");
             //setting log plots for GamClusNumber and KlongPt and Pi0RecZ and Pi0Pt plots
             if (i==1 or i==3 or i==4 or i==6 or i==7){
                 c[i]->SetLogy();
             }
-            rp[i]->GetUpperRefYaxis()->SetRangeUser(0.,1.);
             
-            
-            mchuncut[i]->SetLineColor(1);
-
-
+            rp.push_back(new TRatioPlot(h[i],mch[i])); //creates the ratio plots
+            rp[i]->SetGridlines(lines);
+            rp[i]->Draw();
             leg->Draw();
             rp[i]->GetLowerRefGraph()->SetMinimum(-0.5);
             rp[i]->GetLowerRefGraph()->GetYaxis()->SetTitle("Data : MC Ratio");
@@ -457,7 +415,7 @@ int main(){
         c[i]->Update();
         
         //save the histograms as pdfs
-        c[i]->SaveAs(TString::Format("MCPlotsCutnUncut/%s_3Pi0.eps",name[i].Data()));
+        c[i]->SaveAs(TString::Format("MCPlotsCuts/%s_3Pi0.eps",name[i].Data()));
    }
 }
 

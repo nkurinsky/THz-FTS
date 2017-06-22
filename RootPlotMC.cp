@@ -79,7 +79,7 @@ int main(){
     h.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
     h.push_back(new TH1F(GreekName[2],name[2],10,4,10)); //GamClusNumber
     h.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
-    h.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
+    h.push_back(new TH1F(GreekName[4],name[4],15,0,140)); //KlongPt
     h.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
     h.push_back(new TH1F(GreekName[6],name[6],100,0,7000)); //Pi0RecZ
     h.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
@@ -90,7 +90,7 @@ int main(){
     mch.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
     mch.push_back(new TH1F(GreekName[2],name[2],10,4,10)); //GamClusNumber
     mch.push_back(new TH1F(GreekName[3],name[3],100,0,2500)); //KlongDeltaZ
-    mch.push_back(new TH1F(GreekName[4],name[4],10,0,140)); //KlongPt
+    mch.push_back(new TH1F(GreekName[4],name[4],15,0,140)); //KlongPt
     mch.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
     mch.push_back(new TH1F(GreekName[6],name[6],100,0,7000)); //Pi0RecZ
     mch.push_back(new TH1F(GreekName[7],name[7],50,0,600)); //Pi0Pt
@@ -134,7 +134,7 @@ int main(){
     
 
     
-    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible distance traveled between K^{0}_{L} and #pi^{0} decay(mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
+    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible reconstructed positions of K^{0}_{L} (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
 
     
     //initializing the ratio plot

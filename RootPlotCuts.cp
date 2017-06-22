@@ -139,7 +139,7 @@ int main(){
         }
     }
     
-    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "K^{0}_{L} distance travled in Z","K^{0}_{L} transverse momentum","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion","#pi^{0} transverse momentum"};
+    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible reconstructed positions of K^{0}_{L} (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
     for (int i=0; i<9; i++){
       c.push_back(new TCanvas(Form("c%d",i),"",550,600)); //creates the canvas
       c[i]->SetFillColor(0);

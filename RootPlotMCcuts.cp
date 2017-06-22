@@ -51,6 +51,8 @@ int main(){
     Int_t maxPi0RecZvalue = 5000;
     bool minPi0RecZbool = true;
     Int_t minPi0RecZvalue = 3000;
+    bool KlongDeltaZbool = true;
+    Int_t KlongDeltaZvalue = 400;
    
     
     
@@ -128,8 +130,8 @@ int main(){
     h.push_back(new TH1F(GreekName[0],name[0],80,500,5000)); //CSIEt
     h.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
     h.push_back(new TH1F(GreekName[2],name[2],10,4,10)); //GamClusNumber
-    h.push_back(new TH1F(GreekName[3],name[3],100,0,1500)); //KlongDeltaZ
-    h.push_back(new TH1F(GreekName[4],name[4],8,0,50)); //KlongPt
+    h.push_back(new TH1F(GreekName[3],name[3],100,0,500)); //KlongDeltaZ
+    h.push_back(new TH1F(GreekName[4],name[4],15,0,25)); //KlongPt
     h.push_back(new TH1F(GreekName[5],name[5],10,2,10)); //Pi0Number
     h.push_back(new TH1F(GreekName[6],name[6],100,2500,5500)); //Pi0RecZ
     h.push_back(new TH1F(GreekName[7],name[7],40,0,400)); //Pi0Pt
@@ -139,8 +141,8 @@ int main(){
     mch.push_back(new TH1F(name[0],name[0],80, 500, 5000)); //CSIEt
     mch.push_back(new TH1F(name[1],name[1],75,0,1200)); //GamClusCsiE
     mch.push_back(new TH1F(name[2],name[2],10,4,10)); //GamClusNumber
-    mch.push_back(new TH1F(name[3],name[3],100,0,1500)); //KlongDeltaZ
-    mch.push_back(new TH1F(name[4],name[4],8,0,50)); //KlongPt
+    mch.push_back(new TH1F(name[3],name[3],100,0,500)); //KlongDeltaZ
+    mch.push_back(new TH1F(name[4],name[4],15,0,25)); //KlongPt
     mch.push_back(new TH1F(name[5],name[5],10,2,10)); //Pi0Number
     mch.push_back(new TH1F(name[6],name[6],100,2500,5500)); //Pi0RecZ
     mch.push_back(new TH1F(name[7],name[7],40,0,400)); //Pi0Pt
@@ -215,6 +217,13 @@ int main(){
         if (minPi0RecZbool) {
             for (int l=0; l<6; l++){
                 if (Pi0RecZ[l] < minPi0RecZvalue){
+                    goto increasing;
+                }
+            }
+        }
+        if (KlongDeltaZbool){
+            for (int l=0; l<6; l++){
+                if (KlongDeltaZ[l] > KlongDeltaZvalue){
                     goto increasing;
                 }
             }
@@ -308,6 +317,13 @@ int main(){
                 }
             }
         }
+        if (KlongDeltaZbool){
+            for (int l=0; l<6; l++){
+                if (mcKlongDeltaZ[l] > KlongDeltaZvalue){
+                    goto increasingmc;
+                }
+            }
+        }
         
 
         //filling histograms with the entries that have passed all of our cuts
@@ -328,7 +344,7 @@ int main(){
         increasingmc:; //this is how we are applying cuts from the array based branches.
     }
     
-    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible distance traveled between K^{0}_{L} and #pi^{0} decay(mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
+    TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible reconstructed positions of K^{0}_{L} (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
     
     //initializing the ratio plot
     std::vector<TRatioPlot*> rp;
