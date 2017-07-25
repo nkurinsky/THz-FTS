@@ -415,7 +415,7 @@ int main(){
         c[i]->Update();
         
         //save the histograms as pdfs
-        c[i]->SaveAs(TString::Format("MCPlotsCuts/%s_3Pi0.eps",name[i].Data()));
+        c[i]->SaveAs(TString::Format("MCPlotsCutsTH2F/%s_3Pi0.eps",name[i].Data()));
    }
 }
 

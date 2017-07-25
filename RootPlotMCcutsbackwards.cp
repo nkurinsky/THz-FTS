@@ -1,9 +1,9 @@
 //
-//RootPlotMCcuts.cpp
+//RootPlotMCcutsbackwards.cpp
 //
 // compile this file usign g++
-// g++ `root-config --cflags --glibs` RootPlotMCcuts.cp -o RootPlotMCcuts.exe
-// ./RootPlotMCcuts.exe
+// g++ `root-config --cflags --glibs` RootPlotMCcutsbackwards.cp -o RootPlotMCcutsbackwards.exe
+// ./RootPlotMCcutsbackwards.exe
 
 //monte carlo from run 63, 27kW
 //data from run 62, 24kW
@@ -26,35 +26,38 @@
 
 int main(){
     
-    //initializing cuts
-    bool minGammaEbool = true;
-    Int_t minGammaEnergy = 100;
-    bool maxGammaEbool = true;
-    Int_t maxGammaEnergy = 2000;
-    bool minFiducialXYbool = true;
+    //initializing cuts, originally putting cuts at false so that
+    bool minGammaEbool;
+    Int_t minGammaEnergyvalue = 50;
+    bool maxGammaEbool;
+    Int_t maxGammaEnergyvalue = 2000;
+    bool minFiducialXYbool;
     Int_t MinFiducialXYvalue = 150;
-    bool maxFiducialRbool = true;
+    bool maxFiducialRbool;
     Int_t MaxFiducialRvalue = 850;
-    bool KlongPtMaxbool = true;
-    Int_t KlongPtMaxvalue = 50;
-    bool deltaVertexTimebool = true;
+    bool deltaVertexTimebool;
     Int_t deltaVertexTimevalue = 3;
-    bool totalEtbool = true;
+    bool totalEtbool;
     Int_t TotalEtvalue = 650;
-    bool KlongChiSqZbool = true;
+    bool KlongChiSqZbool;
     Int_t KlongChiSqZvalue = 20;
-    bool MaxDeltaPi0Massbool = true;
+    bool MaxDeltaPi0Massbool;
     Int_t MaxDeltaPi0Massvalue = 10;
-    bool MinClusterDistancebool = true;
+    bool MinClusterDistancebool;
     Int_t MinClusterDistancevalue = 150;
-    bool maxPi0RecZbool = true;
+    bool KlongPtMaxbool[6];
+    bool KlongPtMaxboola;
+    Int_t KlongPtMaxvalue = 50;
+    bool maxPi0RecZbool[6];
+    bool maxPi0RecZboola;
     Int_t maxPi0RecZvalue = 5000;
-    bool minPi0RecZbool = true;
+    bool minPi0RecZbool[6];
+    bool minPi0RecZboola;
     Int_t minPi0RecZvalue = 3000;
-    bool KlongDeltaZbool = true;
+    bool KlongDeltaZbool[6];
+    bool KlongDeltaZboola;
     Int_t KlongDeltaZvalue = 400;
    
-    
     
     
     //initializing vectors of things
@@ -125,7 +128,7 @@ int main(){
     mcTree->SetBranchAddress("MaxDeltaPi0Mass", &mcMaxDeltaPi0Mass); //for cuts
     mcTree->SetBranchAddress("MinClusterDistance", &mcMinClusterDistance); //for cuts
     
-    /*
+    
    //if we want to be the same range as the uncut:
     //creating the histograms
     h.push_back(new TH1F(GreekName[0],name[0],100,0,7000)); //CSIEt
@@ -145,9 +148,9 @@ int main(){
     mch.push_back(new TH1F(name[5],name[5],10,2,10)); //Pi0Number
     mch.push_back(new TH1F(name[6],name[6],100,0,6000)); //Pi0RecZ
     mch.push_back(new TH1F(name[7],name[7],50,0,600)); //Pi0Pt
-     */
-
     
+
+    /*
    //if we want range best for seeing cuts creating the histograms
     h.push_back(new TH1F(GreekName[0],name[0],80,500,5000)); //CSIEt
     h.push_back(new TH1F(GreekName[1],name[1],75,0,1200)); //GamClusCsiE
@@ -167,210 +170,180 @@ int main(){
      mch.push_back(new TH1F(name[5],name[5],10,2,10)); //Pi0Number
      mch.push_back(new TH1F(name[6],name[6],100,2500,5500)); //Pi0RecZ
      mch.push_back(new TH1F(name[7],name[7],40,0,400)); //Pi0Pt
-      
+      */
     
 
     TH2F *h8 = new TH2F(GreekName[8],name[8], 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
-    
-    
-
     TH2F *mch8 = new TH2F(name[8], "Monte Carlo", 200,0,6100,200,0,600); //Pi0Pt:Pi0RecZ
 
     int nEntries = myTree->GetEntries();
+    
     
     for (int iEnt=0; iEnt < nEntries; iEnt++) {
         myTree->GetEntry(iEnt);
         //std::cout<<"iEnt: " <<iEnt<<"\n";
         
         //initialzing and applying cuts
-        if (minGammaEbool) {
-            if (MinGammaE < minGammaEnergy){ //if actual energy is less than min energy cut,then skip the loop
-                continue;
-            }
+        minGammaEbool=false;
+        if (MinGammaE > minGammaEnergyvalue)
+            minGammaEbool=true;
+         maxGammaEbool=false;
+        if (MaxGammaE < maxGammaEnergyvalue)
+            maxGammaEbool=true;
+        minFiducialXYbool = false;
+        if (MinFiducialXY > MinFiducialXYvalue)
+            minFiducialXYbool = true;
+        maxFiducialRbool = false;
+        if (MaxFiducialR < MaxFiducialRvalue)
+            maxFiducialRbool = true;
+        deltaVertexTimebool=false;
+        if (DeltaVertexTime < deltaVertexTimevalue)
+            deltaVertexTimebool=true;
+        totalEtbool=false;
+        if (TotalEt > TotalEtvalue)
+            totalEtbool=true;
+        KlongChiSqZbool=false;
+        if (KlongChiSqZ < KlongChiSqZvalue)
+            KlongChiSqZbool=true;
+        MaxDeltaPi0Massbool=false;
+        if (MaxDeltaPi0Mass < MaxDeltaPi0Massvalue)
+            MaxDeltaPi0Massbool=true;
+        MinClusterDistancebool=false;
+        if (MinClusterDistance > MinClusterDistancevalue)
+            MinClusterDistancebool=true;
+        for (int l=0; l<6; l++){
+            KlongPtMaxbool[l] = false;
+            if (KlongPt[l] < KlongPtMaxvalue)
+                KlongPtMaxbool[l] = true;
+            maxPi0RecZbool[l]=false;
+            if (Pi0RecZ[l] < maxPi0RecZvalue)
+                maxPi0RecZbool[l]=true;
+            minPi0RecZbool[l]=false;
+            if (Pi0RecZ[l] > minPi0RecZvalue)
+                minPi0RecZbool[l]=true;
+            KlongDeltaZbool[l]=false;
+            if (KlongDeltaZ[l] < KlongDeltaZvalue)
+                KlongDeltaZbool[l]=true;
         }
-        if (maxGammaEbool) {
-            if (MaxGammaE > maxGammaEnergy){ //if actual energy is greater than max energy cut,then skip the loop
-                continue;
-            }
-        }
-        if (minFiducialXYbool) {
-            if (MinFiducialXY < MinFiducialXYvalue){
-                continue;
-            }
-        }
-        if (maxFiducialRbool) {
-            if (MaxFiducialR > MaxFiducialRvalue){
-                continue;
-            }
-        }
-        if (KlongPtMaxbool){
-            for (int l=0; l<6; l++){
-                if (KlongPt[l] > KlongPtMaxvalue){
-                    goto increasing;
-                }
-            }
-        }
-        if (deltaVertexTimebool) {
-            if (DeltaVertexTime > deltaVertexTimevalue){
-                continue;
-            }
-        }
-        if (totalEtbool) {
-            if (TotalEt < TotalEtvalue){
-                continue;
-            }
-        }
-        if (KlongChiSqZbool) {
-            if (KlongChiSqZ > KlongChiSqZvalue){
-                continue;
-            }
-        }
-        if (MaxDeltaPi0Massbool) {
-            if (MaxDeltaPi0Mass > MaxDeltaPi0Massvalue){
-                continue;
-            }
-        }
-        if (MinClusterDistancebool) {
-            if (MinClusterDistance < MinClusterDistancevalue){
-                continue;
-            }
-        }
-        if (maxPi0RecZbool) {
-            for (int l=0; l<6; l++){
-                if (Pi0RecZ[l] > maxPi0RecZvalue){
-                    goto increasing;
-                }
-            }
-        }
-        if (minPi0RecZbool) {
-            for (int l=0; l<6; l++){
-                if (Pi0RecZ[l] < minPi0RecZvalue){
-                    goto increasing;
-                }
-            }
-        }
-        if (KlongDeltaZbool){
-            for (int l=0; l<6; l++){
-                if (KlongDeltaZ[l] > KlongDeltaZvalue){
-                    goto increasing;
-                }
-            }
-        }
+        KlongPtMaxboola = false;
+        if (KlongPtMaxbool[0] && KlongPtMaxbool[1] && KlongPtMaxbool[2] && KlongPtMaxbool[3] && KlongPtMaxbool[4] && KlongPtMaxbool[5])
+            KlongPtMaxboola = true;
+        //std::cout<<"KlongPtMaxboola: " <<KlongPtMaxboola<<"\n";
+        maxPi0RecZboola = false;
+        if (maxPi0RecZbool[0] && maxPi0RecZbool[1] && maxPi0RecZbool[2] && maxPi0RecZbool[3] && maxPi0RecZbool[4] && maxPi0RecZbool[5])
+            maxPi0RecZboola = true;
+        //std::cout<<"maxPi0RecZboola: " <<maxPi0RecZboola<<"\n";
 
+        minPi0RecZboola = false;
+        if (minPi0RecZbool[0] && minPi0RecZbool[1] && minPi0RecZbool[2] && minPi0RecZbool[3] && minPi0RecZbool[4] && minPi0RecZbool[5])
+            minPi0RecZboola = true;
+        //std::cout<<"minPi0RecZboola: " <<minPi0RecZboola<<"\n";
+
+        KlongDeltaZboola = false;
+        if (KlongDeltaZbool[0] && KlongDeltaZbool[1] && KlongDeltaZbool[2] && KlongDeltaZbool[3] && KlongDeltaZbool[4] && KlongDeltaZbool[5])
+            KlongDeltaZboola = true;
+        //std::cout<<"KlongDeltaZboola: " <<KlongDeltaZboola<<"\n";
+        
         //fillling the histograms with the entries that have passed cutes
-        h[0]->Fill(CSIEt);
-        h[2]->Fill(GamClusNumber);
-        h[5]->Fill(Pi0Number);
-        for (int n=0; n<6; n++) {
-            h[3]->Fill(KlongDeltaZ[n]);
-            h[4]->Fill(KlongPt[n]);
-            h[6]->Fill(Pi0RecZ[n]);
-            h[7]->Fill(Pi0Pt[n]);
-            h8->Fill(Pi0RecZ[n], Pi0Pt[n]);
-            for (int j=0; j<120; j++) {
-                h[1]->Fill(GamClusCsiE[n][j]);
+        if (minGammaEbool && maxGammaEbool && minFiducialXYbool && maxFiducialRbool && deltaVertexTimebool &&  totalEtbool &&  KlongChiSqZbool && MaxDeltaPi0Massbool && MinClusterDistancebool){
+            for (int n=0; n<6; n++) {
+                h[3]->Fill(KlongDeltaZ[n]);
+                h[4]->Fill(KlongPt[n]);
+                h[6]->Fill(Pi0RecZ[n]);
+                h[7]->Fill(Pi0Pt[n]);
+                h8->Fill(Pi0RecZ[n], Pi0Pt[n]);
+                for (int j=0; j<120; j++) {
+                    h[1]->Fill(GamClusCsiE[n][j]);
+                }
+            }
+            if (KlongPtMaxboola && maxPi0RecZboola && minPi0RecZboola && KlongDeltaZboola) {
+                h[0]->Fill(CSIEt);
+                h[2]->Fill(GamClusNumber);
+                h[5]->Fill(Pi0Number);
             }
         }
-    increasing:; //this is how we are applying cuts from the array based branches.
     }
     
     nEntries = mcTree->GetEntries();
     for (int iEnt=0; iEnt < nEntries; iEnt++) {
         mcTree->GetEntry(iEnt);
+        //std::cout<<"iEnt: " <<iEnt<<"\n";
         
-        //initializing and applying cuts
-        if (minGammaEbool) {
-            if (mcMinGammaE < minGammaEnergy){ //if actual energy is less than min energy cut,then skip the loop
-                continue;
-            }
+        //initialzing and applying cuts
+        minGammaEbool=false;
+        if (mcMinGammaE > minGammaEnergyvalue)
+            minGammaEbool=true;
+        maxGammaEbool=false;
+        if (mcMaxGammaE < maxGammaEnergyvalue)
+            maxGammaEbool=true;
+        minFiducialXYbool = false;
+        if (mcMinFiducialXY > MinFiducialXYvalue)
+            minFiducialXYbool = true;
+        maxFiducialRbool = false;
+        if (mcMaxFiducialR < MaxFiducialRvalue)
+            maxFiducialRbool = true;
+        deltaVertexTimebool=false;
+        if (mcDeltaVertexTime < deltaVertexTimevalue)
+            deltaVertexTimebool=true;
+        totalEtbool=false;
+        if (mcTotalEt > TotalEtvalue)
+            totalEtbool=true;
+        KlongChiSqZbool=false;
+        if (mcKlongChiSqZ < KlongChiSqZvalue)
+            KlongChiSqZbool=true;
+        MaxDeltaPi0Massbool=false;
+        if (mcMaxDeltaPi0Mass < MaxDeltaPi0Massvalue)
+            MaxDeltaPi0Massbool=true;
+        MinClusterDistancebool=false;
+        if (mcMinClusterDistance > MinClusterDistancevalue)
+            MinClusterDistancebool=true;
+        for (int l=0; l<6; l++){
+            KlongPtMaxbool[l] = false;
+            if (mcKlongPt[l] < KlongPtMaxvalue)
+                KlongPtMaxbool[l] = true;
+            maxPi0RecZbool[l]=false;
+            if (mcPi0RecZ[l] < maxPi0RecZvalue)
+                maxPi0RecZbool[l]=true;
+            minPi0RecZbool[l]=false;
+            if (mcPi0RecZ[l] > minPi0RecZvalue)
+                minPi0RecZbool[l]=true;
+            KlongDeltaZbool[l]=false;
+            if (mcKlongDeltaZ[l] < KlongDeltaZvalue)
+                KlongDeltaZbool[l]=true;
         }
-        if (maxGammaEbool) {
-            if (mcMaxGammaE > maxGammaEnergy){ //if actual energy is greater than max energy cut,then skip the loop
-                continue;
-            }
-        }
-        if (minFiducialXYbool) { //if actual xy fiducial is less than min fiducial cut,then skip the loop
-            if (mcMinFiducialXY < MinFiducialXYvalue){
-                continue;
-            }
-        }
-        if (maxFiducialRbool) { //if actual R fiducial is more than min fiducial cut,then skip the loop
-            if (mcMaxFiducialR > MaxFiducialRvalue){
-                continue;
-            }
-        }
-        if (KlongPtMaxbool){
-            for (int l=0; l<6; l++){
-                if (mcKlongPt[l] > KlongPtMaxvalue){
-                    goto increasingmc;
-                }
-            }
-        }
-        if (deltaVertexTimebool) {
-            if (mcDeltaVertexTime > deltaVertexTimevalue){
-                continue;
-            }
-        }
-        if (totalEtbool) {
-            if (mcTotalEt < TotalEtvalue){
-                continue;
-            }
-        }
-        if (KlongChiSqZbool) {
-            if (mcKlongChiSqZ > KlongChiSqZvalue){
-                continue;
-            }
-        }
-        if (MaxDeltaPi0Massbool) {
-            if (mcMaxDeltaPi0Mass > MaxDeltaPi0Massvalue){
-                continue;
-            }
-        }
-        if (MinClusterDistancebool) {
-            if (mcMinClusterDistance < MinClusterDistancevalue){
-                continue;
-            }
-        }
-        if (maxPi0RecZbool) {
-            for (int l=0; l<6; l++){
-                if (mcPi0RecZ[l] > maxPi0RecZvalue){
-                    goto increasingmc;
-                }
-            }
-        }
-        if (minPi0RecZbool) {
-            for (int l=0; l<6; l++){
-                if (mcPi0RecZ[l] < minPi0RecZvalue){
-                    goto increasingmc;
-                }
-            }
-        }
-        if (KlongDeltaZbool){
-            for (int l=0; l<6; l++){
-                if (mcKlongDeltaZ[l] > KlongDeltaZvalue){
-                    goto increasingmc;
-                }
-            }
-        }
+        KlongPtMaxboola = false;
+        if (KlongPtMaxbool[0] && KlongPtMaxbool[1] && KlongPtMaxbool[2] && KlongPtMaxbool[3] && KlongPtMaxbool[4] && KlongPtMaxbool[5])
+            KlongPtMaxboola = true;
+        maxPi0RecZboola = false;
+        if (maxPi0RecZbool[0] && maxPi0RecZbool[1] && maxPi0RecZbool[2] && maxPi0RecZbool[3] && maxPi0RecZbool[4] && maxPi0RecZbool[5])
+            maxPi0RecZboola = true;
+        minPi0RecZboola = false;
+        if (minPi0RecZbool[0] && minPi0RecZbool[1] && minPi0RecZbool[2] && minPi0RecZbool[3] && minPi0RecZbool[4] && minPi0RecZbool[5])
+            minPi0RecZboola = true;
+        KlongDeltaZboola = false;
+        if (KlongDeltaZbool[0] && KlongDeltaZbool[1] && KlongDeltaZbool[2] && KlongDeltaZbool[3] && KlongDeltaZbool[4] && KlongDeltaZbool[5])
+            KlongDeltaZboola = true;
         
-
-        //filling histograms with the entries that have passed all of our cuts
-        mch[0]->Fill(mcCSIEt);
-        mch[2]->Fill(mcGamClusNumber);
-        mch[5]->Fill(mcPi0Number);
-        for (int n=0; n<6; n++) {
-            mch[3]->Fill(mcKlongDeltaZ[n]);
-            mch[4]->Fill(mcKlongPt[n]);
-            mch[6]->Fill(mcPi0RecZ[n]);
-            mch[7]->Fill(mcPi0Pt[n]);
-            mch8->Fill(mcPi0RecZ[n], mcPi0Pt[n]);
-        
-            for (int j=0; j<120; j++) {
-                mch[1]->Fill(mcGamClusCsiE[n][j]);
+        //fillling the histograms with the entries that have passed cutes
+        if (minGammaEbool && maxGammaEbool && minFiducialXYbool && maxFiducialRbool && deltaVertexTimebool &&  totalEtbool &&  KlongChiSqZbool && MaxDeltaPi0Massbool && MinClusterDistancebool){
+            for (int n=0; n<6; n++) {
+                mch[3]->Fill(mcKlongDeltaZ[n]);
+                mch[4]->Fill(mcKlongPt[n]);
+                mch[6]->Fill(mcPi0RecZ[n]);
+                mch[7]->Fill(mcPi0Pt[n]);
+                mch8->Fill(mcPi0RecZ[n], mcPi0Pt[n]);
+                for (int j=0; j<120; j++) {
+                    mch[1]->Fill(mcGamClusCsiE[n][j]);
+                }
+            }
+            if (KlongPtMaxboola && maxPi0RecZboola && minPi0RecZboola && KlongDeltaZboola) {
+                mch[0]->Fill(mcCSIEt);
+                mch[2]->Fill(mcGamClusNumber);
+                mch[5]->Fill(mcPi0Number);
             }
         }
-        increasingmc:; //this is how we are applying cuts from the array based branches.
     }
+
     
     TString x[]={"Total Energy in CSI (MeV)","Energy in CSI gamma cluster (MeV)","Number of gamma clusters", "Range of possible reconstructed positions of K^{0}_{L} (mm)","K^{0}_{L} transverse momentum (MeV/c)","Number of #pi^{0}s","#pi^{0} reconstructed Z poistion (mm)","#pi^{0} transverse momentum (MeV/c)"};
     
@@ -383,7 +356,7 @@ int main(){
             c.push_back(new TCanvas(Form("c%d",i),"",1250,600)); //creates the canvas
         }
         else{
-            c.push_back(new TCanvas(Form("c%d",i),"",800,800)); //creates the canvas
+            c.push_back(new TCanvas(Form("c%d",i),"",800,800)); //creates the canvasdummy
         }
       c[i]->SetFillColor(0);
       c[i]->SetBorderMode(0);
@@ -394,17 +367,41 @@ int main(){
 
         //histogram #8 is special bc it is 2d, so eerything is a bit different.
         //comparing 2 2d histograms side by side rather than plotting on the same page
+        if(i==8){
+            mch8->GetXaxis()->SetTitle("Reconstructed Z position of #pi_{0}");
+            mch8->GetYaxis()->SetTitle("Transverse momentum of #pi_{0}");
+            mch8->GetYaxis()->SetTitleOffset(1.5);
+            mch8->GetXaxis()->SetTitleOffset(1.4);
+            h8->GetXaxis()->SetTitle("Reconstructed Z position of #pi_{0}");
+            h8->GetYaxis()->SetTitle("Transverse momentum of #pi_{0}");
+            h8->GetYaxis()->SetTitleOffset(1.5);
+            h8->GetXaxis()->SetTitleOffset(1.4);
+            c[i]->Divide(2);
+            c[i]->cd(1);
+            //normalization
+            scale[i] = 1/h8->Integral();
+            h8->Scale(scale[i]);
+            mcscale[i] = 1/mch8->Integral();
+            mch8->Scale(mcscale[i]);
+            h8->Draw("scat");
+            c[i]->cd(2);
+            mch8->Draw("colz");
+            gPad->Update();
+            gStyle->SetOptStat(0);
 
-        gStyle->SetOptStat(0);
-        h[i]->GetYaxis()->SetTitleOffset(1.5);
-        h[i]->GetXaxis()->SetTitleOffset(1.4);
-        h[i]->GetYaxis()->SetTitle("Arb. Units");
-        h[i]->GetXaxis()->SetTitle(x[i]);
-        h[i]->GetYaxis()->SetTitleOffset(1.6);
-        TLegend *leg= new TLegend(0.8,0.84,0.89,0.89);
-        leg->AddEntry(h[i],"data");
-        leg->AddEntry(mch[i],"monte carlo");
-        leg->SetBorderSize(2);
+        }
+        
+        else{
+            gStyle->SetOptStat(0);
+            h[i]->GetYaxis()->SetTitleOffset(1.5);
+            h[i]->GetXaxis()->SetTitleOffset(1.4);
+            h[i]->GetYaxis()->SetTitle("Arb. Units");
+            h[i]->GetXaxis()->SetTitle(x[i]);
+            h[i]->GetYaxis()->SetTitleOffset(1.6);
+            TLegend *leg= new TLegend(0.8,0.84,0.89,0.89);
+            leg->AddEntry(h[i],"data");
+            leg->AddEntry(mch[i],"monte carlo");
+            leg->SetBorderSize(2);
             
             
             //sum of the weights for the error (Brian)
@@ -438,7 +435,7 @@ int main(){
         c[i]->Update();
         
         //save the histograms as pdfs
-        c[i]->SaveAs(TString::Format("MCPlotsCuts/%s_3Pi0.eps",name[i].Data()));
+        c[i]->SaveAs(TString::Format("MCPlotsCutsbackwards/%s_3Pi0.eps",name[i].Data()));
    }
 }
 
