@@ -78,6 +78,12 @@ int main(){
     Int_t g6MinHalfEtvalue = 350;
     Int_t g4MinHalfEtvalue = 350;
     Int_t g2MinHalfEtvalue = 350;
+    bool KlongPt=true;
+    Int_t g2KlongPtvalue = 50;
+    bool xCOE = true;
+    Int_t g2xCOEvalue = 60;
+    bool yCOE = true;
+    Int_t g2yCOEvalue = 60;
     
     //initalizing prescaling
     Int_t prescaleTrig0 = 1;
@@ -825,7 +831,7 @@ int main(){
         g2Tree->GetEntry(iEnt);
         //std::cout<<" g2 scaled trig bit int: " << g2ScaledTrigBit<<"\n";
         
-        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass = false;
+        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass, klongpt = false;
         
         //initialzing and applying cuts
         if (minFiducialXYbool && g2MinFiducialXY > g2MinFiducialXYvalue) minfiducialxy = true;
@@ -833,6 +839,7 @@ int main(){
         if (deltaVertexTimebool && g2DeltaVertexTime < g2deltaVertexTimevalue) deltavertextime = true;
         if (KlongChiSqZbool && g2KlongChiSqZ < g2KlongChiSqZvalue) klongchisqz = true;
         if (MinHalfEtbool && g2MinHalfEt > g2MinHalfEtvalue) minhalfet =true;
+        if (KlongPt && g2Pi0Pt[0] <  g2KlongPtvalue) klongpt = true;
         if (Pi0RecZbool) {
             for (int l=0; l<1; l++){
                 if (g2Pi0RecZ[l] < g2Pi0RecZminvalue || g2Pi0RecZ[l] > g2Pi0RecZmaxvalue) {
@@ -842,7 +849,7 @@ int main(){
             }
         }
         
-        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) ) {
+        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) && (KlongPt==klongpt)) {
             
             if (g2ScaledTrigBit & trigger0) g2prescaleTrig0entries1++;
             if ((g2ScaledTrigBit & trigger1)>>1) g2prescaleTrig1entries1++;
@@ -875,13 +882,14 @@ int main(){
     for (int iEnt=0; iEnt < n2Entries2; iEnt++) {
         g2Tree2->GetEntry(iEnt);
         //std::cout<<" g2 scaled trig bit int: " << g2ScaledTrigBit<<"\n";
-        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass = false;
+        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass, klongpt = false;
         
         //initialzing and applying cuts
         if (minFiducialXYbool && g2MinFiducialXY2 > g2MinFiducialXYvalue) minfiducialxy = true;
         if (maxFiducialRbool && g2MaxFiducialR2 < g2MaxFiducialRvalue) maxfiducialr = true;
         if (deltaVertexTimebool && g2DeltaVertexTime2 < g2deltaVertexTimevalue) deltavertextime = true;
         if (KlongChiSqZbool && g2KlongChiSqZ2 < g2KlongChiSqZvalue) klongchisqz = true;
+        if (KlongPt && g2Pi0Pt2[0] < g2KlongPtvalue) klongpt = true;
         if (MinHalfEtbool && g2MinHalfEt2 > g2MinHalfEtvalue) minhalfet =true;
         if (Pi0RecZbool) {
             for (int l=0; l<1; l++){
@@ -892,7 +900,7 @@ int main(){
             }
         }
         
-        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) ) {
+        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) && (KlongPt==klongpt)) {
             
             if (g2ScaledTrigBit2 & trigger0) g2prescaleTrig0entries2++;
             if ((g2ScaledTrigBit2 & trigger1)>>1) g2prescaleTrig1entries2++;
@@ -926,13 +934,14 @@ int main(){
     for (int iEnt=0; iEnt < n2Entries3; iEnt++) {
         g2Tree3->GetEntry(iEnt);
         //std::cout<<" g2 scaled trig bit int: " << g2ScaledTrigBit<<"\n";
-        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass = false;
+        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass, klongpt = false;
         
         //initialzing and applying cuts
         if (minFiducialXYbool && g2MinFiducialXY3 > g2MinFiducialXYvalue) minfiducialxy = true;
         if (maxFiducialRbool && g2MaxFiducialR3 < g2MaxFiducialRvalue) maxfiducialr = true;
         if (deltaVertexTimebool && g2DeltaVertexTime3 < g2deltaVertexTimevalue) deltavertextime = true;
         if (KlongChiSqZbool && g2KlongChiSqZ3 < g2KlongChiSqZvalue) klongchisqz = true;
+        if (KlongPt && g2Pi0Pt3[0] < g2KlongPtvalue) klongpt = true;
         if (MinHalfEtbool && g2MinHalfEt3 > g2MinHalfEtvalue) minhalfet =true;
         if (Pi0RecZbool) {
             for (int l=0; l<1; l++){
@@ -943,7 +952,7 @@ int main(){
             }
         }
         
-        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) ) {
+        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) && (KlongPt==klongpt)) {
             
             if (g2ScaledTrigBit3 & trigger0) g2prescaleTrig0entries3++;
             if ((g2ScaledTrigBit3 & trigger1)>>1) g2prescaleTrig1entries3++;
@@ -992,7 +1001,7 @@ int main(){
         c[i]->SetFrameBorderMode(0);
         c[i]->cd();
         
-        TLegend *leg= new TLegend(0.8,0.84,0.89,0.89);
+        TLegend *leg= new TLegend(0.8,0.8,0.89,0.89);
         leg->AddEntry(g6h[i],"3 #pi^{0} data");
         leg->AddEntry(g4h[i],"2 #pi^{0} data");
         leg->AddEntry(g2h[i],"2 #gamma data");
@@ -1002,7 +1011,7 @@ int main(){
         if (i==1 or i==4 or i==5){
             c[i]->SetLogy();
         }
-        
+        gStyle->SetOptStat(0);
         g6h[i]->Draw();
         g4h[i]->SetLineColor(kRed);
         g4h[i]->Draw("same");
