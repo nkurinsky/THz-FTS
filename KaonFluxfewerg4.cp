@@ -49,6 +49,7 @@ int main(){
     Int_t g6MaxFiducialRvalue = 850;
     Int_t g4MaxFiducialRvalue = 850;
     Int_t g2MaxFiducialRvalue = 850;
+    Int_t g2MinFiducialRvalue = 450;
     bool KlongChiSqZbool = true;
     Int_t g6KlongChiSqZvalue = 20;
     Int_t g4KlongChiSqZvalue = 5;
@@ -78,6 +79,10 @@ int main(){
     Int_t g6MinHalfEtvalue = 350;
     Int_t g4MinHalfEtvalue = 350;
     Int_t g2MinHalfEtvalue = 350;
+    bool KlongPtbool = true;
+    Int_t g2KlongPtvalue = 50;
+    bool xyCOEbool = true;
+    Int_t g4xyCOEvalue = 60;
     
     //initalizing prescaling
     Int_t prescaleTrig0 = 1;
@@ -208,19 +213,19 @@ int main(){
     Double_t g6CSIEt3, g6GamClusCsiE3[6][120], g6KlongDeltaZ3[6], g6Pi0RecZ3[6], g6Pi0Pt3[6], g6Pi0Mom3[6][3], g6KlongMass3[6];
     
     //g4 data
-    Int_t  g4GamClusNumber, g4Pi0Number;
+    Int_t  g4GamClusNumber, g4Pi0Number, g4COE_Esum, g4COE_Ex, g4COE_Ey;
     UInt_t g4ScaledTrigBit;
     Double_t g4MinGammaE, g4MaxGammaE, g4MinFiducialXY, g4MaxFiducialR, g4DeltaVertexTime, g4TotalEt, g4KlongChiSqZ, g4MaxDeltaPi0Mass, g4MinClusterDistance, g4MinHalfEt;
     Double_t g4CSIEt, g4GamClusCsiE[6][120], g4KlongDeltaZ[6], g4Pi0RecZ[6], g4Pi0Pt[6], g4Pi0Mom[6][3], g4KlongMass[6];
     
     //g4 data2
-    Int_t  g4GamClusNumber2, g4Pi0Number2;
+    Int_t  g4GamClusNumber2, g4Pi0Number2, g4COE_Esum2, g4COE_Ex2, g4COE_Ey2;
     UInt_t g4ScaledTrigBit2;
     Double_t g4MinGammaE2, g4MaxGammaE2, g4MinFiducialXY2, g4MaxFiducialR2, g4DeltaVertexTime2, g4TotalEt2, g4KlongChiSqZ2, g4MaxDeltaPi0Mass2, g4MinClusterDistance2, g4MinHalfEt2;
     Double_t g4CSIEt2, g4GamClusCsiE2[6][120], g4KlongDeltaZ2[6], g4Pi0RecZ2[6], g4Pi0Pt2[6], g4Pi0Mom2[6][3], g4KlongMass2[6];
     
     //g4 data3
-    Int_t  g4GamClusNumber3, g4Pi0Number3;
+    Int_t  g4GamClusNumber3, g4Pi0Number3, g4COE_Esum3, g4COE_Ex3, g4COE_Ey3;
     UInt_t g4ScaledTrigBit3;
     Double_t g4MinGammaE3, g4MaxGammaE3, g4MinFiducialXY3, g4MaxFiducialR3, g4DeltaVertexTime3, g4TotalEt3, g4KlongChiSqZ3, g4MaxDeltaPi0Mass3, g4MinClusterDistance3, g4MinHalfEt3;
     Double_t g4CSIEt3, g4GamClusCsiE3[6][120], g4KlongDeltaZ3[6], g4Pi0RecZ3[6], g4Pi0Pt3[6], g4Pi0Mom3[6][3], g4KlongMass3[6];
@@ -334,6 +339,9 @@ int main(){
     g4Tree->SetBranchAddress("MinHalfEt", &g4MinHalfEt); //for cuts
     g4Tree->SetBranchAddress("ScaledTrigBit", &g4ScaledTrigBit); //for prescaling
     g4Tree->SetBranchAddress("KlongMass", g4KlongMass); //for cuts
+    g4Tree->SetBranchAddress("COE_Esum", &g4COE_Esum); //for cuts
+    g4Tree->SetBranchAddress("COE_Ex", &g4COE_Ex); //for cuts
+    g4Tree->SetBranchAddress("COE_Ey", &g4COE_Ey); //for cuts
     
     
     
@@ -354,6 +362,9 @@ int main(){
     g4Tree3->SetBranchAddress("MinHalfEt", &g4MinHalfEt3); //for cuts
     g4Tree3->SetBranchAddress("ScaledTrigBit", &g4ScaledTrigBit3); //for prescaling
     g4Tree3->SetBranchAddress("KlongMass", g4KlongMass3); //for cuts
+    g4Tree3->SetBranchAddress("COE_Esum", &g4COE_Esum3); //for cuts
+    g4Tree3->SetBranchAddress("COE_Ex", &g4COE_Ex3); //for cuts
+    g4Tree3->SetBranchAddress("COE_Ey", &g4COE_Ey3); //for cuts
     
     //linking local variables to the branches
     g4Tree2->SetBranchAddress("CSIEt", &g4CSIEt2); //h0
@@ -372,6 +383,9 @@ int main(){
     g4Tree2->SetBranchAddress("MinHalfEt", &g4MinHalfEt2); //for cuts
     g4Tree2->SetBranchAddress("ScaledTrigBit", &g4ScaledTrigBit2); //for prescaling
     g4Tree2->SetBranchAddress("KlongMass", g4KlongMass2); //for cuts
+    g4Tree2->SetBranchAddress("COE_Esum", &g4COE_Esum2); //for cuts
+    g4Tree2->SetBranchAddress("COE_Ex", &g4COE_Ex2); //for cuts
+    g4Tree2->SetBranchAddress("COE_Ey", &g4COE_Ey2); //for cuts
     
     
     //if we want range best for seeing cuts creating the histograms
@@ -639,7 +653,12 @@ int main(){
         g4Tree->GetEntry(iEnt);
         
         //initialzing and applying cuts
-        bool mingammae, minfiducialxy, maxfiducialr, deltavertextime, klongchisqz,  maxdeltapi0mass, minclusterdistance, pi0recz, deltaklongmass = false;
+        bool mingammae = false, minfiducialxy = false, maxfiducialr = false, deltavertextime = false, klongchisqz,  maxdeltapi0mass = false, minclusterdistance = false, pi0recz = false, deltaklongmass = false, xycoe = false;
+        
+        std::cout << "booleans deltaklongmass " << deltaklongmass << "\n";
+        
+        Double_t g4xyCOE = sqrt(pow(g4COE_Ex, 2) + pow(g4COE_Ey, 2))/g4COE_Esum;
+
         
         if (minGammaEbool && g4MinGammaE > g4minGammaEnergy ) mingammae = true;
         if (minFiducialXYbool && g4MinFiducialXY > g4MinFiducialXYvalue) minfiducialxy = true;
@@ -648,6 +667,7 @@ int main(){
         if (KlongChiSqZbool && g4KlongChiSqZ < g4KlongChiSqZvalue) klongchisqz = true;
         if (MaxDeltaPi0Massbool && g4MaxDeltaPi0Mass < g4MaxDeltaPi0Massvalue) maxdeltapi0mass = true;
         if (MinClusterDistancebool && g4MinClusterDistance < g4MinClusterDistancevalue) minclusterdistance = true;
+        if (xyCOEbool && g4xyCOE<g4xyCOEvalue) xycoe = true;
         if (Pi0RecZbool) {
             for (int l=0; l<2; l++){
                 if (g4Pi0RecZ[l] < g4Pi0RecZminvalue || g4Pi0RecZ[l] > g4Pi0RecZmaxvalue) {
@@ -664,7 +684,7 @@ int main(){
             }
         }
         //filling the histograms with the entries that have passed cuts
-        if ((minGammaEbool==mingammae) && (minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MaxDeltaPi0Massbool==maxdeltapi0mass) && (MinClusterDistancebool==minclusterdistance) && (Pi0RecZbool==pi0recz) && (DeltaKlongMassbool==deltaklongmass)) {
+        if ((minGammaEbool==mingammae) && (minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MaxDeltaPi0Massbool==maxdeltapi0mass) && (MinClusterDistancebool==minclusterdistance) && (Pi0RecZbool==pi0recz) && (DeltaKlongMassbool==deltaklongmass) && (xyCOEbool==xycoe)) {
             
             // checking trigger bits
             if (g4ScaledTrigBit & trigger0) g4prescaleTrig0entries1++;
@@ -825,14 +845,15 @@ int main(){
         g2Tree->GetEntry(iEnt);
         //std::cout<<" g2 scaled trig bit int: " << g2ScaledTrigBit<<"\n";
         
-        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass = false;
+        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass, klongpt = false;
         
         //initialzing and applying cuts
         if (minFiducialXYbool && g2MinFiducialXY > g2MinFiducialXYvalue) minfiducialxy = true;
-        if (maxFiducialRbool && g2MaxFiducialR < g2MaxFiducialRvalue) maxfiducialr = true;
+        if (maxFiducialRbool && g2MaxFiducialR < g2MaxFiducialRvalue && g2MaxFiducialR > g2MinFiducialRvalue) maxfiducialr = true;
         if (deltaVertexTimebool && g2DeltaVertexTime < g2deltaVertexTimevalue) deltavertextime = true;
         if (KlongChiSqZbool && g2KlongChiSqZ < g2KlongChiSqZvalue) klongchisqz = true;
         if (MinHalfEtbool && g2MinHalfEt > g2MinHalfEtvalue) minhalfet =true;
+        if (KlongPtbool && g2Pi0Pt[0] <  g2KlongPtvalue) klongpt = true;
         if (Pi0RecZbool) {
             for (int l=0; l<1; l++){
                 if (g2Pi0RecZ[l] < g2Pi0RecZminvalue || g2Pi0RecZ[l] > g2Pi0RecZmaxvalue) {
@@ -842,7 +863,7 @@ int main(){
             }
         }
         
-        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) ) {
+        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) && (KlongPtbool==klongpt)) {
             
             if (g2ScaledTrigBit & trigger0) g2prescaleTrig0entries1++;
             if ((g2ScaledTrigBit & trigger1)>>1) g2prescaleTrig1entries1++;
@@ -875,13 +896,14 @@ int main(){
     for (int iEnt=0; iEnt < n2Entries2; iEnt++) {
         g2Tree2->GetEntry(iEnt);
         //std::cout<<" g2 scaled trig bit int: " << g2ScaledTrigBit<<"\n";
-        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass = false;
+        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass, klongpt = false;
         
         //initialzing and applying cuts
         if (minFiducialXYbool && g2MinFiducialXY2 > g2MinFiducialXYvalue) minfiducialxy = true;
-        if (maxFiducialRbool && g2MaxFiducialR2 < g2MaxFiducialRvalue) maxfiducialr = true;
+        if (maxFiducialRbool && g2MaxFiducialR2 < g2MaxFiducialRvalue && g2MaxFiducialR2 > g2MinFiducialRvalue) maxfiducialr = true;
         if (deltaVertexTimebool && g2DeltaVertexTime2 < g2deltaVertexTimevalue) deltavertextime = true;
         if (KlongChiSqZbool && g2KlongChiSqZ2 < g2KlongChiSqZvalue) klongchisqz = true;
+        if (KlongPtbool && g2Pi0Pt2[0] < g2KlongPtvalue) klongpt = true;
         if (MinHalfEtbool && g2MinHalfEt2 > g2MinHalfEtvalue) minhalfet =true;
         if (Pi0RecZbool) {
             for (int l=0; l<1; l++){
@@ -892,7 +914,7 @@ int main(){
             }
         }
         
-        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) ) {
+        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) && (KlongPtbool==klongpt)) {
             
             if (g2ScaledTrigBit2 & trigger0) g2prescaleTrig0entries2++;
             if ((g2ScaledTrigBit2 & trigger1)>>1) g2prescaleTrig1entries2++;
@@ -926,13 +948,14 @@ int main(){
     for (int iEnt=0; iEnt < n2Entries3; iEnt++) {
         g2Tree3->GetEntry(iEnt);
         //std::cout<<" g2 scaled trig bit int: " << g2ScaledTrigBit<<"\n";
-        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass = false;
+        bool minfiducialxy, maxfiducialr,  deltavertextime, klongchisqz,  minhalfet, pi0recz, deltaklongmass, klongpt = false;
         
         //initialzing and applying cuts
         if (minFiducialXYbool && g2MinFiducialXY3 > g2MinFiducialXYvalue) minfiducialxy = true;
-        if (maxFiducialRbool && g2MaxFiducialR3 < g2MaxFiducialRvalue) maxfiducialr = true;
+        if (maxFiducialRbool && g2MaxFiducialR3 < g2MaxFiducialRvalue && g2MaxFiducialR3 > g2MinFiducialRvalue) maxfiducialr = true;
         if (deltaVertexTimebool && g2DeltaVertexTime3 < g2deltaVertexTimevalue) deltavertextime = true;
         if (KlongChiSqZbool && g2KlongChiSqZ3 < g2KlongChiSqZvalue) klongchisqz = true;
+        if (KlongPtbool && g2Pi0Pt3[0] < g2KlongPtvalue) klongpt = true;
         if (MinHalfEtbool && g2MinHalfEt3 > g2MinHalfEtvalue) minhalfet =true;
         if (Pi0RecZbool) {
             for (int l=0; l<1; l++){
@@ -943,7 +966,7 @@ int main(){
             }
         }
         
-        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) ) {
+        if ((minFiducialXYbool==minfiducialxy) && (maxFiducialRbool==maxfiducialr) && (deltaVertexTimebool==deltavertextime) && (KlongChiSqZbool==klongchisqz) && (MinHalfEtbool==minhalfet) && (Pi0RecZbool==pi0recz) && (KlongPtbool==klongpt)) {
             
             if (g2ScaledTrigBit3 & trigger0) g2prescaleTrig0entries3++;
             if ((g2ScaledTrigBit3 & trigger1)>>1) g2prescaleTrig1entries3++;
@@ -992,7 +1015,7 @@ int main(){
         c[i]->SetFrameBorderMode(0);
         c[i]->cd();
         
-        TLegend *leg= new TLegend(0.8,0.84,0.89,0.89);
+        TLegend *leg= new TLegend(0.8,0.8,0.89,0.89);
         leg->AddEntry(g6h[i],"3 #pi^{0} data");
         leg->AddEntry(g4h[i],"2 #pi^{0} data");
         leg->AddEntry(g2h[i],"2 #gamma data");
@@ -1002,7 +1025,7 @@ int main(){
         if (i==1 or i==4 or i==5){
             c[i]->SetLogy();
         }
-        
+        gStyle->SetOptStat(0);
         g6h[i]->Draw();
         g4h[i]->SetLineColor(kRed);
         g4h[i]->Draw("same");
@@ -1013,7 +1036,7 @@ int main(){
         c[i]->Update();
         
         //save the histograms as pdfs
-        c[i]->SaveAs(TString::Format("KaonFlux/%s_klongflux.eps",name[i].Data()));
+        c[i]->SaveAs(TString::Format("KaonFluxG4/%s_klongflux.eps",name[i].Data()));
         
     }
     
