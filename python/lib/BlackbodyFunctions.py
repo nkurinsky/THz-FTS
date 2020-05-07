@@ -130,9 +130,10 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 weights.append(power_intensity_trap(freq_or_wave_array[i]/Hz_to_THz, freq_slice_size/Hz_to_THz))
                 k = freq_or_wave_array[i]/(Hz_to_THz*c_micron_per_second) #get wavenumber
             phase = 2.0*pi*dx*k #phase offset depends on wavenumber
-            y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
+            y_phaseNoise += weights[i]*(np.cos(2.0*pi*k*x + phase)+ 1.0)/2
+            #y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
         y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
-        return(x, y)
+        return(x, y, weights)
        
     elif filter == 'PEW':
         for i in range(len(freq_or_wave_array)): #iterate throughout the array
@@ -141,7 +142,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 if min(filter_range) <= freq_or_wave_array[i] <= max(filter_range):
                     k = 1/freq_or_wave_array[i]
                     freq = c_micron_per_second/freq_or_wave_array[i] #converts wavelength in micron to Hz frequency
-                    weights.append(power_intensity_trap(freq, freq_slice_size)) # for blackbody, this is the blackbody intensity in W
+                    weights.append(power_intensity_trap(freq, freq_slice_size/Hz_to_THz))# for blackbody, this is the blackbody intensity in W
                     filter_val.append(1)
                 else:
                     weights.append(0)
@@ -159,7 +160,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
             phase = 2.0*pi*dx*k #phase offset depends on wavenumber
             y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
         y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
-        return(x, y, filter_val)
+        return(x, y, weights, filter_val)
         
     elif filter == 'SiW':
          for i in range(len(freq_or_wave_array)): #iterate throughout the array
@@ -170,7 +171,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                  if min(filter_range_1) <= freq_or_wave_array[i] <= max(filter_range_1) or min(filter_range_2) <= freq_or_wave_array[i] <= max(filter_range_2):
                      k = 1/freq_or_wave_array[i]
                      freq = c_micron_per_second/freq_or_wave_array[i] #converts wavelength in micron to Hz frequency
-                     weights.append(power_intensity_trap(freq/Hz_to_THz, freq_slice_size/Hz_to_THz)) # for blackbody, this is the blackbody intensity in W
+                     weights.append(power_intensity_trap(freq, freq_slice_size/Hz_to_THz)) # for blackbody, this is the blackbody intensity in W
                      filter_val.append(1)
                  else:
                     weights.append(0)
@@ -189,7 +190,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
              phase = 2.0*pi*dx*k #phase offset depends on wavenumber
              y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
          y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
-         return(x, y, filter_val)
+         return(x, y, weights, filter_val)
    
 
 

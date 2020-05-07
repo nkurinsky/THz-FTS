@@ -1,7 +1,7 @@
 from scipy.signal import periodogram as psd
 import numpy as np
 
-L=12e4
+L=12e3
 dL = 0.1 #micron, step size
 fs = 1/dL #micron^-1, inv. step size (multiply by h gives energy resolution)
 c_micron_per_second = 3.0e8 * 1e6
