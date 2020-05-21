@@ -5,12 +5,17 @@ L=12e3
 dL = 0.1 #micron, step size
 fs = 1/dL #micron^-1, inv. step size (multiply by h gives energy resolution)
 c_micron_per_second = 3.0e8 * 1e6
+m_to_micron = 1e-6
 Hz_to_THz = 1e-12
 
 #given the input of some array (y) which holds the values of the input signal over the travel length, return the frequency (in THz) and sqrt of the spectrum, to be plotted directly
-def psd_frequency(y, windowing='parzen', fs=fs):
-    wave_number,spectrum = psd(y,fs=fs, window=windowing) #wavenumber, spectrum
-    return (wave_number*c_micron_per_second*Hz_to_THz, np.sqrt(spectrum))
+def psd_frequency(y, windowing='parzen', fs=fs, frequency_slice_size = 0.01):
+    wave_number,spectrum = psd(y,fs=fs, scaling = 'spectrum', window=windowing) #wavenumber, spectrum
+    spectrum_hz =  spectrum/c_micron_per_second #converts spectrum from being in usints W^2 micron to W^2/hz
+    frequency = wave_number*c_micron_per_second
+    df = frequency[1]-frequency[0]
+    #return (frequency*Hz_to_THz, np.sqrt(spectrum_hz*df)/1.7)
+    return (frequency*Hz_to_THz, np.sqrt(spectrum))
     
 def adjust_spectrum(spectrum, adjustment=1e-7):
     adjusted_spectrum = spectrum -adjustment
