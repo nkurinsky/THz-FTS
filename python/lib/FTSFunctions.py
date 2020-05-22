@@ -14,8 +14,7 @@ def psd_frequency(y, windowing='parzen', fs=fs, frequency_slice_size = 0.01):
     spectrum_hz =  spectrum/c_micron_per_second #converts spectrum from being in usints W^2 micron to W^2/hz
     frequency = wave_number*c_micron_per_second
     df = frequency[1]-frequency[0]
-    #return (frequency*Hz_to_THz, np.sqrt(spectrum_hz*df)/1.7)
-    return (frequency*Hz_to_THz, np.sqrt(spectrum))
+    return (frequency*Hz_to_THz, np.sqrt(spectrum_hz*df)/df*1e9*np.sqrt(2) )
     
 def adjust_spectrum(spectrum, adjustment=1e-7):
     adjusted_spectrum = spectrum -adjustment
