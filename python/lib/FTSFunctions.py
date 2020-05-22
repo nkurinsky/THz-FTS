@@ -16,7 +16,7 @@ def psd_frequency(y, windowing='parzen', fs=fs, frequency_slice_size = 0.01):
     df = frequency[1]-frequency[0]
     return (frequency*Hz_to_THz, np.sqrt(spectrum_hz*df)/df*1e9*np.sqrt(2) )
     
-def adjust_spectrum(spectrum, adjustment=1e-7):
+def adjust_spectrum(spectrum, adjustment=1e-18):
     adjusted_spectrum = spectrum -adjustment
     for p in range(len(adjusted_spectrum)):
         if adjusted_spectrum[p] < 0:
