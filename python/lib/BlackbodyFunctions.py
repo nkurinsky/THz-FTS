@@ -113,17 +113,14 @@ def blackbodyWeights(freqs,slice_size, Temp=2e3, useTrap=False):
 #frequnecy array should be in terms of THz
 #frequency slice size should be in THz
 def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0.1, filter='no', dx=-6*mm_to_micron, L=12e3, dL=0.1, sigma=0):
-    '''
-    Here i need to put in my help string
-    '''
+
     x=np.arange(0,L,dL)
     y_phaseNoise=np.zeros_like(x)
     filter_val=[]
     weights=[]
-    k = 0
+    k=0
     
     if filter == 'no':
-
         for i in range(len(freq_or_wave_array)): #iterate throughout the array
             if lambda_or_nu: #an array of wavelengths in microns
                 freq = c_micron_per_second/freq_or_wave_array[i] #converts wavelength in micron to Hz frequency
@@ -134,6 +131,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 k = freq_or_wave_array[i]/(Hz_to_THz*c_micron_per_second) #get wavenumber
             phase = 2.0*pi*dx*k #phase offset depends on wavenumber
             y_phaseNoise += weights[i]*(np.cos(2.0*pi*k*x + phase)+ 1.0)/2
+            #y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
         y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
         return(x, y, weights)
        
@@ -158,6 +156,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 else:
                     weights.append(0)
                     filter_val.append(0)
+                
             phase = 2.0*pi*dx*k #phase offset depends on wavenumber
             y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
         y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
@@ -187,6 +186,7 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 else:
                     weights.append(0)
                     filter_val.append(0)
+                
              phase = 2.0*pi*dx*k #phase offset depends on wavenumber
              y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
          y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
