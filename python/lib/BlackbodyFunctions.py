@@ -113,14 +113,32 @@ def blackbodyWeights(freqs,slice_size, Temp=2e3, useTrap=False):
 #frequnecy array should be in terms of THz
 #frequency slice size should be in THz
 def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0.1, filter='no', dx=-6*mm_to_micron, L=12e3, dL=0.1, sigma=0):
-
+    '''
+    This function is designed to return the input paramters needed for taking a fourier transform for an outupt of blackbody noise.
+    
+    Inputs:
+        * lambda_or_nu-> this is a boolean value to determine if the input list to calculate power spectrum at is in frequncy (THz) or wavelengths (micron). Note wavelength input lists will not be correctly normalized for overall power.
+        * freq_or_wave_array-> this is the input of the array.
+        * freq_slice_size=0.1 -> frequency slice size (either from input array when lambda_or_nu is false, or a default 'dummy' value of 0.1 if lambda_or_nu is true ~this is where the normalization issue arises from for wavelengths~)
+        * filter='no'-> Default is 'no' other options are 'PEW' or 'SiW'
+        * dx=-6*mm_to_micron -> motorized stage has 12mm of mobility, so -6mm is our starting point to allow us to see interference peak in the middle of data.
+        * L=12e3 -> motorized stage has 12mm of mobility
+        * dL=0.1 -> motorized stage has step size of 0.1 micron of mobility
+        * sigma=0 -> amplitude of added noise. Typically it is easier to add this later.
+        
+    Returns:
+        * x-> array of optical path difference for FTS input. Simply x=np.arange(0,L,dL)
+        * y-> array of signal amplitude as a function of optical path difference.
+        * weights-> blackbody spectrum as a function of frequency of frequency contributions. These values act as weights for different frequency contributions to the overall spectrum. 
+    '''
     x=np.arange(0,L,dL)
     y_phaseNoise=np.zeros_like(x)
     filter_val=[]
     weights=[]
-    k=0
+    k = 0
     
     if filter == 'no':
+
         for i in range(len(freq_or_wave_array)): #iterate throughout the array
             if lambda_or_nu: #an array of wavelengths in microns
                 freq = c_micron_per_second/freq_or_wave_array[i] #converts wavelength in micron to Hz frequency
@@ -131,7 +149,6 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 k = freq_or_wave_array[i]/(Hz_to_THz*c_micron_per_second) #get wavenumber
             phase = 2.0*pi*dx*k #phase offset depends on wavenumber
             y_phaseNoise += weights[i]*(np.cos(2.0*pi*k*x + phase)+ 1.0)/2
-            #y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
         y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
         return(x, y, weights)
        
@@ -156,7 +173,6 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 else:
                     weights.append(0)
                     filter_val.append(0)
-                
             phase = 2.0*pi*dx*k #phase offset depends on wavenumber
             y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
         y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal
@@ -186,7 +202,6 @@ def blackbody_input_function(lambda_or_nu, freq_or_wave_array, freq_slice_size=0
                 else:
                     weights.append(0)
                     filter_val.append(0)
-                
              phase = 2.0*pi*dx*k #phase offset depends on wavenumber
              y_phaseNoise += weights[i]*0.5*(np.cos(2.0*pi*k*x + phase)+ 1.0)
          y = y_phaseNoise + np.random.rand(len(x))*sigma #create the input signal

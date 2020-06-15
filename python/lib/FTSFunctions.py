@@ -1,5 +1,6 @@
 from scipy.signal import periodogram as psd
 import numpy as np
+from scipy.signal import get_window
 
 L=12e3
 dL = 0.1 #micron, step size
@@ -10,14 +11,14 @@ Hz_to_THz = 1e-12
 
 #given the input of some array (y) which holds the values of the input signal over the travel length, return the frequency (in THz) and sqrt of the spectrum, to be plotted directly
 def psd_frequency(y, windowing='parzen', fs=fs, frequency_slice_size = 0.01):
-    wave_number,spectrum = psd(y,fs=fs, scaling = 'spectrum', window=windowing) #wavenumber, spectrum
+    wave_number,spectrum = psd(y,fs=fs, window=get_window(windowing,len(y))) #wavenumber, spectrum
     spectrum_hz =  spectrum/c_micron_per_second #converts spectrum from being in usints W^2 micron to W^2/hz
     frequency = wave_number*c_micron_per_second
     df = frequency[1]-frequency[0]
     return (frequency*Hz_to_THz, np.sqrt(spectrum_hz*df)/df*1e9*np.sqrt(2) )
     
-def adjust_spectrum(spectrum, adjustment=1e-18):
-    adjusted_spectrum = spectrum -adjustment
+def adjust_spectrum(spectrum, adjustment=1e-7):
+    adjusted_spectrum = spectrum - adjustment
     for p in range(len(adjusted_spectrum)):
         if adjusted_spectrum[p] < 0:
           adjusted_spectrum[p] = 0
