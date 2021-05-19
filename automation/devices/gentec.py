@@ -16,7 +16,7 @@ class Gentec:
         if(verbose):
             self.getInfo()
 
-    def send(self,cmd,sleepTime=0.1):
+    def send(self,cmd,sleepTime=0.01):
         if(self.debug):
             print("Sending: ",cmd)
         self.port.write((cmd+"\r\n").encode())
