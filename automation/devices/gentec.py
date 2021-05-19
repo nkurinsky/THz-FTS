@@ -1,16 +1,18 @@
 import serial,time
+import datetime
 
 defPort="COM1"
 
 class Gentec:
 
-    def __init__(self,portName=defPort,verbose=True,debug=False):
+    def __init__(self,portName=defPort,verbose=False,debug=False):
         try:
             self.port = serial.Serial(portName, baudrate=921600, timeout=0.0)
         except:
             raise(ValueError("Could not open serial port "+portName))
         self.verbose=verbose
         self.debug=debug
+        self.scale=2e-3
         if(verbose):
             self.getInfo()
 
@@ -25,55 +27,76 @@ class Gentec:
         while(len(rcv) > 0):
             rStr = rcv.decode()
             if(rStr[0] != '#'):
-                msg.append(rStr)
+                msg.append(rStr[:-2])
                 if(self.verbose):
                     print(rStr,end='')                
             rcv = self.port.readline()
         return msg
 
+    def formatResponse(myStrs):
+        return myStrs[0][:-2]
+
     def getTau(self):
-        return self.send("tau")
+        return formatResponse(self.send("tau"))
 
     def setTau(self,val):
-        return self.send("tau"+str(val))
+        return formatResponse(self.send("tau"+str(val)))
 
     def getSerialNum(self):
-        return self.send("USN")
+        return formatResponse(self.send("USN"))
 
     def getMaxReading(self):
-        return self.send("MRD")
+        return formatResponse(self.send("MRD"))
 
     def getMaxRange(self):
-        return self.send("MAX")
+        return formatResponse(self.send("MAX"))
 
     def getMinRange(self):
-        return self.send("MIN")
+        return formatResponse(self.send("MIN"))
 
     def getRange(self):
-        return self.send("RNG")
+        return formatResponse(self.send("RNG"))
 
     def setRange(self,rng):
-        return self.send("RNG"+str(int(rng)))
+        return formatResponse(self.send("RNG"+str(int(rng))))
 
     def setZero(self):
-        return self.send("ZRO")
+        return formatResponse(self.send("ZRO"))
 
     def getValues(self,nSamples=1):
-        startErr = self.send("STR1")
+        startErr = formatResponse(self.send("STR1"))
+        if(startErr == "ERR"):
+            print("Error: Couldn't start data stream")
+        else:
+            if(self.verbose):
+                print("Data Streaming Starting, Will Gather",nSamples,"Samples")
 
         vals=list()
+        self.port.reset_input_buffer()
         while(len(vals) < nSamples):
+            loopCount=0
+            while(self.port.in_waiting < 1):
+                time.sleep(0.05) # data is being streamed at 5 Hz, get time accurate to 50ms
+                loopCount+=1
+                if(loopCount > 10):
+                    print("No values being received from device, aborting data collection")
+            if(loopCount > 10):
+                break
             rcv = self.port.readline()
-            vals.append(rcv)
-            time.sleep(0.1)            
+            rStr = rcv.decode()
+            counts = int(rStr[0:4],16)
+            freq = 1e6/float(counts)
+            pADC = int(rStr[5:9],16)
+            power = float(pADC)/3276.0 * self.scale
+            vals.append([datetime.datetime.now(),counts,freq,pADC,power])
         
-        endErr = self.send("STR0")
+        endErr = formatResponse(self.send("STR0"))
         
         return vals
 
     def getInfo(self):
         print("S/N:",end='')
-        print(self.getSerialNum[0])
+        print(self.getSerialNum())
         print("Allowed Ranges:",end='')
         print(self.getMinRange(),'-',self.getMaxRange())
         print("Current Range:",end='')
