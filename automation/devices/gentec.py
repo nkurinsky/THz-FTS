@@ -29,42 +29,42 @@ class Gentec:
             if(rStr[0] != '#'):
                 msg.append(rStr[:-2])
                 if(self.verbose):
-                    print(rStr,end='')                
+                    print(rStr[:-2],end='')                
             rcv = self.port.readline()
-        return msg
-
-    def formatResponse(myStrs):
-        return myStrs[0][:-2]
+        if(len(msg) < 2):
+            return msg[0]
+        else:
+            return msg
 
     def getTau(self):
-        return formatResponse(self.send("tau"))
+        return self.send("tau")
 
     def setTau(self,val):
-        return formatResponse(self.send("tau"+str(val)))
+        return self.send("tau"+str(val))
 
     def getSerialNum(self):
-        return formatResponse(self.send("USN"))
+        return self.send("USN")
 
     def getMaxReading(self):
-        return formatResponse(self.send("MRD"))
+        return self.send("MRD")
 
     def getMaxRange(self):
-        return formatResponse(self.send("MAX"))
+        return self.send("MAX")
 
     def getMinRange(self):
-        return formatResponse(self.send("MIN"))
+        return self.send("MIN")
 
     def getRange(self):
-        return formatResponse(self.send("RNG"))
+        return self.send("RNG")
 
     def setRange(self,rng):
-        return formatResponse(self.send("RNG"+str(int(rng))))
+        return self.send("RNG"+str(int(rng)))
 
     def setZero(self):
-        return formatResponse(self.send("ZRO"))
+        return self.send("ZRO")
 
     def getValues(self,nSamples=1):
-        startErr = formatResponse(self.send("STR1"))
+        startErr = self.send("STR1")
         if(startErr == "ERR"):
             print("Error: Couldn't start data stream")
         else:
@@ -90,7 +90,7 @@ class Gentec:
             power = float(pADC)/3276.0 * self.scale
             vals.append([datetime.datetime.now(),counts,freq,pADC,power])
         
-        endErr = formatResponse(self.send("STR0"))
+        endErr = self.send("STR0")
         
         return vals
 
