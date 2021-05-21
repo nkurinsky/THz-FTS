@@ -14,7 +14,7 @@ class Gentec:
         self.debug=debug
         self.scales = {'9':2e-6,'10':2e-5,'11':2e-4,'12':2e-3,'13':2e-2}
         self.cRange = self.getRange()
-        self.scale=self.scales[cRange]
+        self.scale=self.scales[self.cRange]
         self.minRange = self.getMinRange()
         self.maxRange = self.getMaxRange()
         self.tau = self.getTau()
@@ -66,7 +66,7 @@ class Gentec:
     def setRange(self,rng):
         retval = self.send("RNG"+str(int(rng)))
         self.cRange = self.getRange()
-        self.scale=self.scales[cRange]
+        self.scale=self.scales[self.cRange]
         return retval
 
     def setZero(self):
