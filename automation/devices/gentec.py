@@ -64,7 +64,10 @@ class Gentec:
         return self.send("RNG")
 
     def setRange(self,rng):
-        return self.send("RNG"+str(int(rng)))
+        retval = self.send("RNG"+str(int(rng)))
+        self.cRange = self.getRange()
+        self.scale=self.scales[cRange]
+        return retval
 
     def setZero(self):
         return self.send("ZRO")
