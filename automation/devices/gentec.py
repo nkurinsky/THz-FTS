@@ -12,11 +12,17 @@ class Gentec:
             raise(ValueError("Could not open serial port "+portName))
         self.verbose=verbose
         self.debug=debug
-        self.scale=2e-3
+        self.scales = {'9':2e-6,'10':2e-5,'11':2e-4,'12':2e-3,'13':2e-2}
+        self.cRange = self.getRange()
+        self.scale=self.scales[cRange]
+        self.minRange = self.getMinRange()
+        self.maxRange = self.getMaxRange()
+        self.tau = self.getTau()
+        
         if(verbose):
             self.getInfo()
 
-    def send(self,cmd,sleepTime=0.01):
+    def send(self,cmd,sleepTime=0.05):
         if(self.debug):
             print("Sending: ",cmd)
         self.port.write((cmd+"\r\n").encode())
@@ -31,7 +37,7 @@ class Gentec:
                 if(self.verbose):
                     print(rStr[:-2],end='')                
             rcv = self.port.readline()
-        if(len(msg) < 2):
+        if(len(msg) == 1):
             return msg[0]
         else:
             return msg
@@ -95,12 +101,6 @@ class Gentec:
         return vals
 
     def getInfo(self):
-        print("S/N:",end='')
-        print(self.getSerialNum())
-        print("Allowed Ranges:",end='')
-        print(self.getMinRange(),'-',self.getMaxRange())
-        print("Current Range:",end='')
-        print(self.getRange())
-        print("Max Reading:",end='')
-        print(self.getMaxReading())
-        print("Tau:",self.getTau())
+        print("Allowed Ranges:",self.minRange,'-',self.maxRange)
+        print("Current Range:"+str(self.cRange)+"("+str(self.scale)+")")
+        print("Tau:",self.tau)
