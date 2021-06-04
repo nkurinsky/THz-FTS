@@ -10,17 +10,18 @@ class Gentec:
             self.port = serial.Serial(portName, baudrate=921600, timeout=0.0)
         except:
             raise(ValueError("Could not open serial port "+portName))
-        self.verbose=verbose
-        self.debug=debug
-        self.scales = {'9':2e-6,'10':2e-5,'11':2e-4,'12':2e-3,'13':2e-2}
-        self.cRange = self.getRange()
-        self.scale=self.scales[self.cRange]
+        self.verbose  = verbose
+        self.debug    = debug
+        self.scales   = {'9':2e-6,'10':2e-5,'11':2e-4,'12':2e-3,'13':2e-2}
+        self.cRange   = self.getRange()
+        self.scale    = self.scales[self.cRange]
         self.minRange = self.getMinRange()
         self.maxRange = self.getMaxRange()
-        self.tau = self.getTau()
+        self.tau      = self.getTau()
         
         if(verbose):
             self.getInfo()
+            print('Initial self.scale')
 
     def send(self,cmd,sleepTime=0.05):
         if(self.debug):
@@ -64,9 +65,11 @@ class Gentec:
         return self.send("RNG")
 
     def setRange(self,rng):
-        retval = self.send("RNG"+str(int(rng)))
-        self.cRange = self.getRange()
-        self.scale=self.scales[self.cRange]
+        retval      = self.send("RNG"+str(int(rng)))
+        self.cRange = rng
+        self.scale  = self.scales[rng]
+        print('Doing setRange: setting {0} ({1})'.format(rng, self.scale))
+        time.sleep(1.5)
         return retval
 
     def setZero(self):
@@ -88,16 +91,25 @@ class Gentec:
                 time.sleep(0.05) # data is being streamed at 5 Hz, get time accurate to 50ms
                 loopCount+=1
                 if(loopCount > 10):
-                    print("No values being received from device, aborting data collection")
-            if(loopCount > 10):
-                break
-            rcv = self.port.readline()
-            rStr = rcv.decode()
-            counts = int(rStr[0:4],16)
-            freq = 1e6/float(counts)
-            pADC = int(rStr[5:9],16)
-            power = float(pADC)/3276.0 * self.scale
-            vals.append([datetime.datetime.now(),counts,freq,pADC,power])
+                    if self.verbose: 
+                        print("No values being received from device, aborting data collection")
+                    break
+            rcv    = self.port.readline()
+            rStr   = rcv.decode()
+            if self.debug:
+                print('getValues: rStr = {0}'.format(rStr))
+            try:
+                counts = int(rStr[0:4],16)
+            except ValueError:
+                counts = -1 # If Gentec not returning values, set to -1 for error handling
+            freq   = 1e6/float(counts)
+            try: 
+                pADC   = int(rStr[5:9],16)
+                power  = (float(pADC)/3276.0) * self.scale
+            except ValueError: 
+                pADC  = -1 # If Gentec not returning values, set to -1 for error handling
+                power = -1
+            vals.append([datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f"),counts,freq,pADC,power])
         
         endErr = self.send("STR0")
         
